@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.sc.competition.mapper.ScCompetitionMapper">
+    
+    <resultMap type="ScCompetition" id="ScCompetitionResult">
+        <result property="competiitonId"    column="Competiiton_id"    />
+        <result property="name"    column="name"    />
+    </resultMap>
+
+    <resultMap id="ScCompetitionScCollegeResult" type="ScCompetition" extends="ScCompetitionResult">
+        <collection property="scCollegeList" ofType="ScCollege" column="Competiiton_id" select="selectScCollegeList" />
+    </resultMap>
+
+    <resultMap type="ScCollege" id="ScCollegeResult">
+        <result property="collegeId"    column="college_id"    />
+        <result property="name"    column="name"    />
+        <result property="competitionId"    column="competition_id"    />
+    </resultMap>
+
+    <sql id="selectScCompetitionVo">
+        select Competiiton_id, name from sc_competition
+    </sql>
+
+    <select id="selectScCompetitionList" parameterType="ScCompetition" resultMap="ScCompetitionResult">
+        <include refid="selectScCompetitionVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectScCompetitionByCompetiitonId" parameterType="Long" resultMap="ScCompetitionScCollegeResult">
+        select Competiiton_id, name
+        from sc_competition
+        where Competiiton_id = #{competiitonId}
+    </select>
+
+    <select id="selectScCollegeList" resultMap="ScCollegeResult">
+        select college_id, name, competition_id
+        from sc_college
+        where competition_id = #{competition_id}
+    </select>
+
+    <insert id="insertScCompetition" parameterType="ScCompetition" useGeneratedKeys="true" keyProperty="competiitonId">
+        insert into sc_competition
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScCompetition" parameterType="ScCompetition">
+        update sc_competition
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+        </trim>
+        where Competiiton_id = #{competiitonId}
+    </update>
+
+    <delete id="deleteScCompetitionByCompetiitonId" parameterType="Long">
+        delete from sc_competition where Competiiton_id = #{competiitonId}
+    </delete>
+
+    <delete id="deleteScCompetitionByCompetiitonIds" parameterType="String">
+        delete from sc_competition where Competiiton_id in 
+        <foreach item="competiitonId" collection="array" open="(" separator="," close=")">
+            #{competiitonId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteScCollegeByCompetitionIds" parameterType="String">
+        delete from sc_college where competition_id in 
+        <foreach item="competitionId" collection="array" open="(" separator="," close=")">
+            #{competitionId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteScCollegeByCompetitionId" parameterType="Long">
+        delete from sc_college where competition_id = #{competitionId}
+    </delete>
+
+    <insert id="batchScCollege">
+        insert into sc_college( college_id, name, competition_id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.collegeId}, #{item.name}, #{item.competitionId})
+        </foreach>
+    </insert>
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.sc.players.mapper.ScPlayersMapper">
+    
+    <resultMap type="ScPlayers" id="ScPlayersResult">
+        <result property="playerId"    column="player_id"    />
+        <result property="name"    column="name"    />
+        <result property="collegeId"    column="college_id"    />
+        <result property="type"    column="type"    />
+    </resultMap>
+
+    <sql id="selectScPlayersVo">
+        select player_id, name, college_id, type from sc_players
+    </sql>
+
+    <select id="selectScPlayersList" parameterType="ScPlayers" resultMap="ScPlayersResult">
+        <include refid="selectScPlayersVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="collegeId != null "> and college_id = #{collegeId}</if>
+            <if test="type != null "> and type = #{type}</if>
+        </where>
+    </select>
+    
+    <select id="selectScPlayersByPlayerId" parameterType="Long" resultMap="ScPlayersResult">
+        <include refid="selectScPlayersVo"/>
+        where player_id = #{playerId}
+    </select>
+
+    <insert id="insertScPlayers" parameterType="ScPlayers" useGeneratedKeys="true" keyProperty="playerId">
+        insert into sc_players
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="collegeId != null">college_id,</if>
+            <if test="type != null">type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="collegeId != null">#{collegeId},</if>
+            <if test="type != null">#{type},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScPlayers" parameterType="ScPlayers">
+        update sc_players
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="collegeId != null">college_id = #{collegeId},</if>
+            <if test="type != null">type = #{type},</if>
+        </trim>
+        where player_id = #{playerId}
+    </update>
+
+    <delete id="deleteScPlayersByPlayerId" parameterType="Long">
+        delete from sc_players where player_id = #{playerId}
+    </delete>
+
+    <delete id="deleteScPlayersByPlayerIds" parameterType="String">
+        delete from sc_players where player_id in 
+        <foreach item="playerId" collection="array" open="(" separator="," close=")">
+            #{playerId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.sc.CollageScore.mapper.ScCollageScoreMapper">
+    
+    <resultMap type="ScCollageScore" id="ScCollageScoreResult">
+        <result property="id"    column="id"    />
+        <result property="collegeId"    column="college_id"    />
+        <result property="playerId"    column="player_id"    />
+        <result property="judgeId"    column="judge_id"    />
+        <result property="score"    column="score"    />
+    </resultMap>
+
+    <sql id="selectScCollageScoreVo">
+        select id, college_id, player_id, judge_id, score from sc_collage_score
+    </sql>
+
+    <select id="selectScCollageScoreList" parameterType="ScCollageScore" resultMap="ScCollageScoreResult">
+        <include refid="selectScCollageScoreVo"/>
+        <where>  
+            <if test="collegeId != null "> and college_id = #{collegeId}</if>
+            <if test="playerId != null "> and player_id = #{playerId}</if>
+            <if test="judgeId != null "> and judge_id = #{judgeId}</if>
+            <if test="score != null "> and score = #{score}</if>
+        </where>
+    </select>
+    
+    <select id="selectScCollageScoreById" parameterType="Long" resultMap="ScCollageScoreResult">
+        <include refid="selectScCollageScoreVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertScCollageScore" parameterType="ScCollageScore" useGeneratedKeys="true" keyProperty="id">
+        insert into sc_collage_score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="collegeId != null">college_id,</if>
+            <if test="playerId != null">player_id,</if>
+            <if test="judgeId != null">judge_id,</if>
+            <if test="score != null">score,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="collegeId != null">#{collegeId},</if>
+            <if test="playerId != null">#{playerId},</if>
+            <if test="judgeId != null">#{judgeId},</if>
+            <if test="score != null">#{score},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScCollageScore" parameterType="ScCollageScore">
+        update sc_collage_score
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="collegeId != null">college_id = #{collegeId},</if>
+            <if test="playerId != null">player_id = #{playerId},</if>
+            <if test="judgeId != null">judge_id = #{judgeId},</if>
+            <if test="score != null">score = #{score},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteScCollageScoreById" parameterType="Long">
+        delete from sc_collage_score where id = #{id}
+    </delete>
+
+    <delete id="deleteScCollageScoreByIds" parameterType="String">
+        delete from sc_collage_score where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

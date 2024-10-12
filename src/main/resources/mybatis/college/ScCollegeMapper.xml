@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.sc.college.mapper.ScCollegeMapper">
+    
+    <resultMap type="ScCollege" id="ScCollegeResult">
+        <result property="collegeId"    column="college_id"    />
+        <result property="name"    column="name"    />
+        <result property="competitionId"    column="competition_id"    />
+    </resultMap>
+
+    <resultMap id="ScCollegeScPlayersResult" type="ScCollege" extends="ScCollegeResult">
+        <collection property="scPlayersList" ofType="ScPlayers" column="college_id" select="selectScPlayersList" />
+    </resultMap>
+
+    <resultMap type="ScPlayers" id="ScPlayersResult">
+        <result property="playerId"    column="player_id"    />
+        <result property="name"    column="name"    />
+        <result property="collegeId"    column="college_id"    />
+        <result property="type"    column="type"    />
+    </resultMap>
+
+    <sql id="selectScCollegeVo">
+        select college_id, name, competition_id from sc_college
+    </sql>
+
+    <select id="selectScCollegeList" parameterType="ScCollege" resultMap="ScCollegeResult">
+        <include refid="selectScCollegeVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="competitionId != null "> and competition_id = #{competitionId}</if>
+        </where>
+    </select>
+    
+    <select id="selectScCollegeByCollegeId" parameterType="Long" resultMap="ScCollegeScPlayersResult">
+        select college_id, name, competition_id
+        from sc_college
+        where college_id = #{collegeId}
+    </select>
+
+    <select id="selectScPlayersList" resultMap="ScPlayersResult">
+        select player_id, name, college_id, type
+        from sc_players
+        where college_id = #{college_id}
+    </select>
+
+    <insert id="insertScCollege" parameterType="ScCollege" useGeneratedKeys="true" keyProperty="collegeId">
+        insert into sc_college
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="competitionId != null">competition_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="competitionId != null">#{competitionId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScCollege" parameterType="ScCollege">
+        update sc_college
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="competitionId != null">competition_id = #{competitionId},</if>
+        </trim>
+        where college_id = #{collegeId}
+    </update>
+
+    <delete id="deleteScCollegeByCollegeId" parameterType="Long">
+        delete from sc_college where college_id = #{collegeId}
+    </delete>
+
+    <delete id="deleteScCollegeByCollegeIds" parameterType="String">
+        delete from sc_college where college_id in 
+        <foreach item="collegeId" collection="array" open="(" separator="," close=")">
+            #{collegeId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteScPlayersByCollegeIds" parameterType="String">
+        delete from sc_players where college_id in 
+        <foreach item="collegeId" collection="array" open="(" separator="," close=")">
+            #{collegeId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteScPlayersByCollegeId" parameterType="Long">
+        delete from sc_players where college_id = #{collegeId}
+    </delete>
+
+    <insert id="batchScPlayers">
+        insert into sc_players( player_id, name, college_id, type) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.playerId}, #{item.name}, #{item.collegeId}, #{item.type})
+        </foreach>
+    </insert>
+
+</mapper>
