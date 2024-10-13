@@ -9,10 +9,13 @@ import com.ruoyi.project.sc.CollageScore.service.IScCollageScoreService;
 import com.ruoyi.project.sc.college.domain.ScCollege;
 import com.ruoyi.project.sc.college.mapper.ScCollegeMapper;
 import com.ruoyi.project.sc.competition.domain.CompetitionListVO;
+import com.ruoyi.project.sc.competition.domain.CompetitionUser;
 import com.ruoyi.project.sc.players.domain.ScPlayers;
 import com.ruoyi.project.sc.players.mapper.ScPlayersMapper;
 import com.ruoyi.project.sc.sort.domain.ScCompetitionSort;
 import com.ruoyi.project.sc.sort.mapper.ScCompetitionSortMapper;
+import com.ruoyi.project.socket.CompetitionCurrentData;
+import com.ruoyi.project.socket.NoticeWebsocketResp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -213,9 +216,9 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         for (ScCompetitionSort competitionSort : scCompetitionSorts) {
             CompetitionListVO competitionListVO = new CompetitionListVO();
             ScPlayers scPlayersA = playerCollegeMap.get(competitionSort.getUser1());
-            competitionListVO.setUserA(new CompetitionListVO.CompetitionUser(scPlayersA.getName(), scPlayersA.getScColleges().getName()));
+            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getName(), scPlayersA.getScColleges().getName()));
             ScPlayers scPlayersB = playerCollegeMap.get(competitionSort.getUser2());
-            competitionListVO.setUserB(new CompetitionListVO.CompetitionUser(scPlayersB.getName(), scPlayersB.getScColleges().getName()));
+            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getName(), scPlayersB.getScColleges().getName()));
             competitionListVO.setSort(competitionSort.getSort());
             competitionListVO.setSortId(competitionSort.getId());
             list.add(competitionListVO);
@@ -226,6 +229,34 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
     @Override
     public ScCompetition getCurrentCompetition(Long id) {
         return scCompetitionMapper.selectScCompetitionByCompetiitonId(id);
+    }
+
+    @Override
+    public NoticeWebsocketResp getCurrentCompetitionData(Long id) {
+        NoticeWebsocketResp noticeWebsocketResp = new NoticeWebsocketResp();
+
+        List<CompetitionListVO> competitionListVOS = selectbatchCompetitionList(id);
+        noticeWebsocketResp.setCompetitionListVOList(competitionListVOS);
+
+        ScCompetition scCompetition = scCompetitionMapper.selectScCompetitionByCompetiitonId(id);
+        CompetitionCurrentData competitionCurrentData = new CompetitionCurrentData();
+
+        competitionCurrentData.setCurrentSort(scCompetition.getCurrentSort());
+        competitionCurrentData.setCurrentType(scCompetition.getCurrentType());
+
+        if (scCompetition.getCurrentSort() > 0L) {
+            Optional<CompetitionListVO> first = competitionListVOS.stream().filter(x -> Objects.equals(x.getSort(), scCompetition.getCurrentSort())).findFirst();
+            if (first.isPresent()) {
+                CompetitionUser competitionUserA = first.get().getUserA();
+                CompetitionUser competitionUserB = first.get().getUserB();
+
+                competitionCurrentData.setUserA(competitionUserA);
+                competitionCurrentData.setUserB(competitionUserB);
+            }
+        }
+
+        noticeWebsocketResp.setCurrentData(competitionCurrentData);
+        return noticeWebsocketResp;
     }
 
     /**
@@ -257,7 +288,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         // 收集所有玩家并建立玩家与学院的映射
         for (ScCollege college : colleges) {
             for (ScPlayers player : college.getScPlayersList()) {
-                if(player.getType()==1 || player.getType()==2){
+                if (player.getType() == 1 || player.getType() == 2) {
                     allPlayers.add(player);
                     playerCollegeMap.put(player, college);
                 }

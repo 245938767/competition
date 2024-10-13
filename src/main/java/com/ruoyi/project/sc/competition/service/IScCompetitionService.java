@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ruoyi.project.sc.competition.domain.CompetitionListVO;
 import com.ruoyi.project.sc.competition.domain.ScCompetition;
+import com.ruoyi.project.socket.NoticeWebsocketResp;
 
 /**
  * competitionService接口
@@ -88,7 +89,21 @@ public interface IScCompetitionService {
     public boolean restoreSort(Long id);
 
 
+    /**
+     * 获得比赛名单数据
+     *
+     * @param id
+     * @return
+     */
     public List<CompetitionListVO> selectbatchCompetitionList(Long id);
 
     public ScCompetition getCurrentCompetition(Long id);
+
+    /**
+     * 获得websocket数据
+     *
+     * @param id
+     * @return
+     */
+    public NoticeWebsocketResp getCurrentCompetitionData(Long id);
 }

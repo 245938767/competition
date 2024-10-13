@@ -190,6 +190,7 @@ public class ScCompetitionController extends BaseController {
         Map<String, Object> stringObjectMap = new HashMap<>();
         stringObjectMap.put("list", competitionListVOS);
         stringObjectMap.put("sort", currentCompetition.getCurrentSort());
+        stringObjectMap.put("type", currentCompetition.getCurrentType());
         return AjaxResult.success(stringObjectMap);
     }
 

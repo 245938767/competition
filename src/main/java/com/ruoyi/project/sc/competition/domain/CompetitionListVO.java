@@ -40,30 +40,5 @@ public class CompetitionListVO implements Serializable {
         this.sort = sort;
     }
 
-    public static class CompetitionUser implements Serializable {
-        public CompetitionUser(String name, String collage) {
-            this.name = name;
-            this.collage = collage;
-        }
-
-        private String name;
-        private String collage;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getCollage() {
-            return collage;
-        }
-
-        public void setCollage(String collage) {
-            this.collage = collage;
-        }
-    }
 }
 
