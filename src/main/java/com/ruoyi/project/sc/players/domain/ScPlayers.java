@@ -1,9 +1,12 @@
 package com.ruoyi.project.sc.players.domain;
 
+import com.ruoyi.project.sc.college.domain.ScCollege;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.framework.aspectj.lang.annotation.Excel;
 import com.ruoyi.framework.web.domain.BaseEntity;
+
+import java.util.Collections;
 
 /**
  * players对象 sc_players
@@ -30,7 +33,17 @@ public class ScPlayers extends BaseEntity
     @Excel(name = "玩家类型", readConverterExp = "a=,b,谈心谈话，学生")
     private Long type;
 
-    public void setPlayerId(Long playerId) 
+    private ScCollege scColleges;
+
+    public ScCollege getScColleges() {
+        return scColleges;
+    }
+
+    public void setScColleges(ScCollege scColleges) {
+        this.scColleges = scColleges;
+    }
+
+    public void setPlayerId(Long playerId)
     {
         this.playerId = playerId;
     }

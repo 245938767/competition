@@ -29,6 +29,14 @@ public class ScCompetition extends BaseEntity
     @Excel(name = "当前出场学院")
     private Long collageId;
 
+    /** 当前比赛类型  0-未开始 1-案例分析 3-谈心谈话*/
+    @Excel(name = "当前比赛类型")
+    private Long currentType;
+
+    /** 当前排序状态 0-未开始 other-当前状态*/
+    @Excel(name = "当前排序状态")
+    private Long currentSort;
+
     /** college信息 */
     private List<ScCollege> scCollegeList;
 
@@ -62,6 +70,26 @@ public class ScCompetition extends BaseEntity
         return collageId;
     }
 
+    public void setCurrentType(Long currentType) 
+    {
+        this.currentType = currentType;
+    }
+
+    public Long getCurrentType() 
+    {
+        return currentType;
+    }
+
+    public void setCurrentSort(Long currentSort) 
+    {
+        this.currentSort = currentSort;
+    }
+
+    public Long getCurrentSort() 
+    {
+        return currentSort;
+    }
+
     public List<ScCollege> getScCollegeList()
     {
         return scCollegeList;
@@ -78,6 +106,8 @@ public class ScCompetition extends BaseEntity
             .append("competiitonId", getCompetiitonId())
             .append("name", getName())
             .append("collageId", getCollageId())
+            .append("currentType", getCurrentType())
+            .append("currentSort", getCurrentSort())
             .append("scCollegeList", getScCollegeList())
             .toString();
     }

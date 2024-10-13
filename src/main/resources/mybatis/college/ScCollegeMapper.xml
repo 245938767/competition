@@ -1,40 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.project.sc.college.mapper.ScCollegeMapper">
-    
+
     <resultMap type="ScCollege" id="ScCollegeResult">
-        <result property="collegeId"    column="college_id"    />
-        <result property="name"    column="name"    />
-        <result property="competitionId"    column="competition_id"    />
-        <result property="sort"    column="sort"    />
+        <result property="collegeId" column="college_id"/>
+        <result property="name" column="name"/>
+        <result property="competitionId" column="competition_id"/>
+        <result property="sort" column="sort"/>
+
+        <collection property="scPlayersList" ofType="ScPlayers" column="college_id" select="selectScPlayersList"/>
     </resultMap>
 
     <resultMap id="ScCollegeScPlayersResult" type="ScCollege" extends="ScCollegeResult">
-        <collection property="scPlayersList" ofType="ScPlayers" column="college_id" select="selectScPlayersList" />
+        <collection property="scPlayersList" ofType="ScPlayers" column="college_id" select="selectScPlayersList"/>
     </resultMap>
 
     <resultMap type="ScPlayers" id="ScPlayersResult">
-        <result property="playerId"    column="player_id"    />
-        <result property="name"    column="name"    />
-        <result property="collegeId"    column="college_id"    />
-        <result property="type"    column="type"    />
+        <result property="playerId" column="player_id"/>
+        <result property="name" column="name"/>
+        <result property="collegeId" column="college_id"/>
+        <result property="type" column="type"/>
     </resultMap>
 
     <sql id="selectScCollegeVo">
-        select college_id, name, competition_id, sort from sc_college
+        select college_id, name, competition_id, sort
+        from sc_college
     </sql>
 
     <select id="selectScCollegeList" parameterType="ScCollege" resultMap="ScCollegeResult">
         <include refid="selectScCollegeVo"/>
-        <where>  
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="competitionId != null "> and competition_id = #{competitionId}</if>
-            <if test="sort != null "> and sort = #{sort}</if>
+        <where>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="competitionId != null ">and competition_id = #{competitionId}</if>
+            <if test="sort != null ">and sort = #{sort}</if>
         </where>
     </select>
-    
+
     <select id="selectScCollegeByCollegeId" parameterType="Long" resultMap="ScCollegeScPlayersResult">
         select college_id, name, competition_id, sort
         from sc_college
@@ -53,12 +56,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null and name != ''">name,</if>
             <if test="competitionId != null">competition_id,</if>
             <if test="sort != null">sort,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="competitionId != null">#{competitionId},</if>
             <if test="sort != null">#{sort},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateScCollege" parameterType="ScCollege">
@@ -72,25 +75,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteScCollegeByCollegeId" parameterType="Long">
-        delete from sc_college where college_id = #{collegeId}
+        delete
+        from sc_college
+        where college_id = #{collegeId}
     </delete>
 
     <delete id="deleteScCollegeByCollegeIds" parameterType="String">
-        delete from sc_college where college_id in 
+        delete from sc_college where college_id in
         <foreach item="collegeId" collection="array" open="(" separator="," close=")">
             #{collegeId}
         </foreach>
     </delete>
-    
+
     <delete id="deleteScPlayersByCollegeIds" parameterType="String">
-        delete from sc_players where college_id in 
+        delete from sc_players where college_id in
         <foreach item="collegeId" collection="array" open="(" separator="," close=")">
             #{collegeId}
         </foreach>
     </delete>
 
     <delete id="deleteScPlayersByCollegeId" parameterType="Long">
-        delete from sc_players where college_id = #{collegeId}
+        delete
+        from sc_players
+        where college_id = #{collegeId}
     </delete>
 
     <insert id="batchScPlayers">

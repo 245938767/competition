@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.sc.sort.mapper.ScCompetitionSortMapper">
+    
+    <resultMap type="ScCompetitionSort" id="ScCompetitionSortResult">
+        <result property="id"    column="id"    />
+        <result property="user1"    column="user1"    />
+        <result property="user2"    column="user2"    />
+        <result property="sort"    column="sort"    />
+        <result property="competitionId"    column="competition_id"    />
+        <result property="type"    column="type"    />
+        <result property="collageId"    column="collage_id"    />
+    </resultMap>
+
+    <sql id="selectScCompetitionSortVo">
+        select id, user1, user2, sort, competition_id, type, collage_id from sc_competition_sort
+    </sql>
+
+    <select id="selectScCompetitionSortList" parameterType="ScCompetitionSort" resultMap="ScCompetitionSortResult">
+        <include refid="selectScCompetitionSortVo"/>
+        <where>  
+            <if test="user1 != null "> and user1 = #{user1}</if>
+            <if test="user2 != null "> and user2 = #{user2}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="competitionId != null "> and competition_id = #{competitionId}</if>
+            <if test="type != null "> and type = #{type}</if>
+            <if test="collageId != null "> and collage_id = #{collageId}</if>
+        </where>
+    </select>
+    
+    <select id="selectScCompetitionSortById" parameterType="Long" resultMap="ScCompetitionSortResult">
+        <include refid="selectScCompetitionSortVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertScCompetitionSort" parameterType="ScCompetitionSort" useGeneratedKeys="true" keyProperty="id">
+        insert into sc_competition_sort
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="user1 != null">user1,</if>
+            <if test="user2 != null">user2,</if>
+            <if test="sort != null">sort,</if>
+            <if test="competitionId != null">competition_id,</if>
+            <if test="type != null">type,</if>
+            <if test="collageId != null">collage_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="user1 != null">#{user1},</if>
+            <if test="user2 != null">#{user2},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="competitionId != null">#{competitionId},</if>
+            <if test="type != null">#{type},</if>
+            <if test="collageId != null">#{collageId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateScCompetitionSort" parameterType="ScCompetitionSort">
+        update sc_competition_sort
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="user1 != null">user1 = #{user1},</if>
+            <if test="user2 != null">user2 = #{user2},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="competitionId != null">competition_id = #{competitionId},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="collageId != null">collage_id = #{collageId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteScCompetitionSortById" parameterType="Long">
+        delete from sc_competition_sort where id = #{id}
+    </delete>
+
+    <delete id="deleteScCompetitionSortByIds" parameterType="String">
+        delete from sc_competition_sort where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

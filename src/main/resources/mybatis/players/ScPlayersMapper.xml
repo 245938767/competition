@@ -9,12 +9,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="name"    column="name"    />
         <result property="collegeId"    column="college_id"    />
         <result property="type"    column="type"    />
+
+        <collection property="scColleges" ofType="ScCollege" column="college_id" select="selectScCollegeByCollegeId"/>
+    </resultMap>
+
+    <resultMap type="ScCollege" id="ScCollegeResult">
+        <result property="collegeId" column="college_id"/>
+        <result property="name" column="name"/>
+        <result property="competitionId" column="competition_id"/>
+        <result property="sort" column="sort"/>
     </resultMap>
 
     <sql id="selectScPlayersVo">
         select player_id, name, college_id, type from sc_players
     </sql>
-
+    <select id="selectScCollegeByCollegeId" parameterType="Long" resultMap="ScCollegeResult">
+        select college_id, name, competition_id, sort
+        from sc_college
+        where college_id = #{collegeId}
+    </select>
     <select id="selectScPlayersList" parameterType="ScPlayers" resultMap="ScPlayersResult">
         <include refid="selectScPlayersVo"/>
         <where>  

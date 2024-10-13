@@ -8,6 +8,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="competiitonId"    column="Competiiton_id"    />
         <result property="name"    column="name"    />
         <result property="collageId"    column="collage_id"    />
+        <result property="currentType"    column="current_type"    />
+        <result property="currentSort"    column="current_sort"    />
     </resultMap>
 
     <resultMap id="ScCompetitionScCollegeResult" type="ScCompetition" extends="ScCompetitionResult">
@@ -22,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectScCompetitionVo">
-        select Competiiton_id, name, collage_id from sc_competition
+        select Competiiton_id, name, collage_id, current_type, current_sort from sc_competition
     </sql>
 
     <select id="selectScCompetitionList" parameterType="ScCompetition" resultMap="ScCompetitionResult">
@@ -30,11 +32,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="collageId != null "> and collage_id = #{collageId}</if>
+            <if test="currentType != null "> and current_type = #{currentType}</if>
+            <if test="currentSort != null "> and current_sort = #{currentSort}</if>
         </where>
     </select>
     
     <select id="selectScCompetitionByCompetiitonId" parameterType="Long" resultMap="ScCompetitionScCollegeResult">
-        select Competiiton_id, name, collage_id
+        select Competiiton_id, name, collage_id, current_type, current_sort
         from sc_competition
         where Competiiton_id = #{competiitonId}
     </select>
@@ -50,10 +54,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
             <if test="collageId != null">collage_id,</if>
+            <if test="currentType != null">current_type,</if>
+            <if test="currentSort != null">current_sort,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="collageId != null">#{collageId},</if>
+            <if test="currentType != null">#{currentType},</if>
+            <if test="currentSort != null">#{currentSort},</if>
          </trim>
     </insert>
 
@@ -62,6 +70,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null and name != ''">name = #{name},</if>
             <if test="collageId != null">collage_id = #{collageId},</if>
+            <if test="currentType != null">current_type = #{currentType},</if>
+            <if test="currentSort != null">current_sort = #{currentSort},</if>
         </trim>
         where Competiiton_id = #{competiitonId}
     </update>
