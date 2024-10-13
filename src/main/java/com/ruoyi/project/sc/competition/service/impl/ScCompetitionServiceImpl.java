@@ -215,10 +215,13 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         scPlayers1.forEach(x -> playerCollegeMap.put(x.getPlayerId(), x));
         for (ScCompetitionSort competitionSort : scCompetitionSorts) {
             CompetitionListVO competitionListVO = new CompetitionListVO();
+
             ScPlayers scPlayersA = playerCollegeMap.get(competitionSort.getUser1());
-            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getName(), scPlayersA.getScColleges().getName()));
+            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName()));
+
             ScPlayers scPlayersB = playerCollegeMap.get(competitionSort.getUser2());
-            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getName(), scPlayersB.getScColleges().getName()));
+            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName()));
+
             competitionListVO.setSort(competitionSort.getSort());
             competitionListVO.setSortId(competitionSort.getId());
             list.add(competitionListVO);
@@ -247,9 +250,21 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         if (scCompetition.getCurrentSort() > 0L) {
             Optional<CompetitionListVO> first = competitionListVOS.stream().filter(x -> Objects.equals(x.getSort(), scCompetition.getCurrentSort())).findFirst();
             if (first.isPresent()) {
+                //获得评委评分
                 CompetitionUser competitionUserA = first.get().getUserA();
                 CompetitionUser competitionUserB = first.get().getUserB();
 
+                ScCollageScore scCollageScoreA = new ScCollageScore();
+                scCollageScoreA.setPlayerId(competitionUserA.getPlayerId());
+                List<ScCollageScore> scCollageScoresA = scCollageScoreMapper.selectScCollageScoreList(scCollageScoreA);
+
+
+                ScCollageScore scCollageScoreB = new ScCollageScore();
+                scCollageScoreB.setPlayerId(competitionUserB.getPlayerId());
+                List<ScCollageScore> scCollageScoresB = scCollageScoreMapper.selectScCollageScoreList(scCollageScoreB);
+
+                competitionUserA.setScCollageScores(scCollageScoresA);
+                competitionUserB.setScCollageScores(scCollageScoresB);
                 competitionCurrentData.setUserA(competitionUserA);
                 competitionCurrentData.setUserB(competitionUserB);
             }
