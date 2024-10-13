@@ -184,7 +184,7 @@ public class ScCompetitionController extends BaseController {
 
     @PostMapping("/selectCompetitionVOList/{id}")
     @ResponseBody
-    public AjaxResult selectCompetitionVOList(Long id) {
+    public AjaxResult selectCompetitionVOList(@PathVariable Long id) {
         List<CompetitionListVO> competitionListVOS = scCompetitionService.selectbatchCompetitionList(id);
         ScCompetition currentCompetition = scCompetitionService.getCurrentCompetition(id);
         Map<String, Object> stringObjectMap = new HashMap<>();

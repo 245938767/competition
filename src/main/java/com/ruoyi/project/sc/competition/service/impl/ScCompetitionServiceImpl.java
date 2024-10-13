@@ -209,7 +209,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         }
 
         Map<Long, ScPlayers> playerCollegeMap = new HashMap<>();
-        scPlayers1.forEach(x -> playerCollegeMap.put(x.getCollegeId(), x));
+        scPlayers1.forEach(x -> playerCollegeMap.put(x.getPlayerId(), x));
         for (ScCompetitionSort competitionSort : scCompetitionSorts) {
             CompetitionListVO competitionListVO = new CompetitionListVO();
             ScPlayers scPlayersA = playerCollegeMap.get(competitionSort.getUser1());
@@ -257,8 +257,10 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         // 收集所有玩家并建立玩家与学院的映射
         for (ScCollege college : colleges) {
             for (ScPlayers player : college.getScPlayersList()) {
-                allPlayers.add(player);
-                playerCollegeMap.put(player, college);
+                if(player.getType()==1 || player.getType()==2){
+                    allPlayers.add(player);
+                    playerCollegeMap.put(player, college);
+                }
             }
         }
 
