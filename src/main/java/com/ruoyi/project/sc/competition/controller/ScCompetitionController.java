@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ruoyi.project.sc.competition.domain.CompetitionListVO;
+import com.ruoyi.project.socket.NoticeWebsocketResp;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,6 +193,14 @@ public class ScCompetitionController extends BaseController {
         stringObjectMap.put("sort", currentCompetition.getCurrentSort());
         stringObjectMap.put("type", currentCompetition.getCurrentType());
         return AjaxResult.success(stringObjectMap);
+    }
+
+
+    @PostMapping("/selectWebSocketData/{id}")
+    @ResponseBody
+    public AjaxResult selectWebSocketData(@PathVariable Long id) {
+        NoticeWebsocketResp currentCompetitionData = scCompetitionService.getCurrentCompetitionData(id);
+        return AjaxResult.success(currentCompetitionData);
     }
 
 }

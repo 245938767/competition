@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.ruoyi.common.utils.StringUtils.isEmpty;
 
 /**
  * 评委端WebSocket
