@@ -7,7 +7,7 @@ import com.ruoyi.project.sc.college.domain.ScCollege;
  * collegeService接口
  * 
  * @author larthur
- * @date 2024-10-12
+ * @date 2024-10-13
  */
 public interface IScCollegeService 
 {

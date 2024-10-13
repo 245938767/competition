@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="collegeId"    column="college_id"    />
         <result property="name"    column="name"    />
         <result property="competitionId"    column="competition_id"    />
+        <result property="sort"    column="sort"    />
     </resultMap>
 
     <resultMap id="ScCollegeScPlayersResult" type="ScCollege" extends="ScCollegeResult">
@@ -22,7 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectScCollegeVo">
-        select college_id, name, competition_id from sc_college
+        select college_id, name, competition_id, sort from sc_college
     </sql>
 
     <select id="selectScCollegeList" parameterType="ScCollege" resultMap="ScCollegeResult">
@@ -30,11 +31,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="competitionId != null "> and competition_id = #{competitionId}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
         </where>
     </select>
     
     <select id="selectScCollegeByCollegeId" parameterType="Long" resultMap="ScCollegeScPlayersResult">
-        select college_id, name, competition_id
+        select college_id, name, competition_id, sort
         from sc_college
         where college_id = #{collegeId}
     </select>
@@ -50,10 +52,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
             <if test="competitionId != null">competition_id,</if>
+            <if test="sort != null">sort,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="competitionId != null">#{competitionId},</if>
+            <if test="sort != null">#{sort},</if>
          </trim>
     </insert>
 
@@ -62,6 +66,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null and name != ''">name = #{name},</if>
             <if test="competitionId != null">competition_id = #{competitionId},</if>
+            <if test="sort != null">sort = #{sort},</if>
         </trim>
         where college_id = #{collegeId}
     </update>

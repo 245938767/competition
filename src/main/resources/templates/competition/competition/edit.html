@@ -16,6 +16,14 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">当前出场学院：</label>
+                    <div class="col-sm-8">
+                        <input name="collageId" th:field="*{collageId}" class="form-control" type="text">
+                    </div>
+                </div>
+            </div>
             <h4 class="form-header h4">college信息</h4>
             <div class="row">
                 <div class="col-sm-12">
@@ -73,6 +81,16 @@
                 },
 
                 {
+                    field: 'sort',
+                    align: 'center',
+                    title: '比赛上场顺序',
+                    formatter: function(value, row, index) {
+                        var html = $.common.sprintf("<input class='form-control' type='text' name='scCollegeList[%s].sort' value='%s'>", index, value);
+                        return html;
+                    }
+                },
+
+                {
                     title: '操作',
                     align: 'center',
                     formatter: function(value, row, index) {
@@ -89,6 +107,7 @@
             var row = {
                 index: $.table.serialNumber(count),
                 name: "",
+                sort: "",
             }
             sub.addRow(row);
         }

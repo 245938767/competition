@@ -7,7 +7,7 @@ import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
  * CollageScoreService接口
  * 
  * @author larthur
- * @date 2024-10-12
+ * @date 2024-10-13
  */
 public interface IScCollageScoreService 
 {

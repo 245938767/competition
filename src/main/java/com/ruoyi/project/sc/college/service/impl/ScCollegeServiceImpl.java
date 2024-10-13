@@ -17,7 +17,7 @@ import com.ruoyi.common.utils.text.Convert;
  * collegeService业务层处理
  * 
  * @author larthur
- * @date 2024-10-12
+ * @date 2024-10-13
  */
 @Service
 public class ScCollegeServiceImpl implements IScCollegeService 

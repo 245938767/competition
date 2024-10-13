@@ -19,6 +19,10 @@
                                 <input type="text" name="competitionId"/>
                             </li>
                             <li>
+                                <label>比赛上场顺序：</label>
+                                <input type="text" name="sort"/>
+                            </li>
+                            <li>
                                 <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
                                 <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
                             </li>
@@ -75,6 +79,10 @@
                 {
                     field: 'competitionId',
                     title: '关联的比赛'
+                },
+                {
+                    field: 'sort',
+                    title: '比赛上场顺序'
                 },
                 {
                     title: '操作',

@@ -23,7 +23,7 @@ import com.ruoyi.framework.web.page.TableDataInfo;
  * CollageScoreController
  * 
  * @author larthur
- * @date 2024-10-12
+ * @date 2024-10-13
  */
 @Controller
 @RequestMapping("/CollageScore/CollageScore")

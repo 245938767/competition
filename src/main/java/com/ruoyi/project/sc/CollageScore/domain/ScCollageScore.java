@@ -9,7 +9,7 @@ import com.ruoyi.framework.web.domain.BaseEntity;
  * CollageScore对象 sc_collage_score
  * 
  * @author larthur
- * @date 2024-10-12
+ * @date 2024-10-13
  */
 public class ScCollageScore extends BaseEntity
 {

@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="ScCompetition" id="ScCompetitionResult">
         <result property="competiitonId"    column="Competiiton_id"    />
         <result property="name"    column="name"    />
+        <result property="collageId"    column="collage_id"    />
     </resultMap>
 
     <resultMap id="ScCompetitionScCollegeResult" type="ScCompetition" extends="ScCompetitionResult">
@@ -17,27 +18,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="collegeId"    column="college_id"    />
         <result property="name"    column="name"    />
         <result property="competitionId"    column="competition_id"    />
+        <result property="sort"    column="sort"    />
     </resultMap>
 
     <sql id="selectScCompetitionVo">
-        select Competiiton_id, name from sc_competition
+        select Competiiton_id, name, collage_id from sc_competition
     </sql>
 
     <select id="selectScCompetitionList" parameterType="ScCompetition" resultMap="ScCompetitionResult">
         <include refid="selectScCompetitionVo"/>
         <where>  
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="collageId != null "> and collage_id = #{collageId}</if>
         </where>
     </select>
     
     <select id="selectScCompetitionByCompetiitonId" parameterType="Long" resultMap="ScCompetitionScCollegeResult">
-        select Competiiton_id, name
+        select Competiiton_id, name, collage_id
         from sc_competition
         where Competiiton_id = #{competiitonId}
     </select>
 
     <select id="selectScCollegeList" resultMap="ScCollegeResult">
-        select college_id, name, competition_id
+        select college_id, name, competition_id, sort
         from sc_college
         where competition_id = #{competition_id}
     </select>
@@ -46,9 +49,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         insert into sc_competition
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
+            <if test="collageId != null">collage_id,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
+            <if test="collageId != null">#{collageId},</if>
          </trim>
     </insert>
 
@@ -56,6 +61,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update sc_competition
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null and name != ''">name = #{name},</if>
+            <if test="collageId != null">collage_id = #{collageId},</if>
         </trim>
         where Competiiton_id = #{competiitonId}
     </update>
@@ -83,9 +89,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <insert id="batchScCollege">
-        insert into sc_college( college_id, name, competition_id) values
+        insert into sc_college( college_id, name, competition_id, sort) values
         <foreach item="item" index="index" collection="list" separator=",">
-            ( #{item.collegeId}, #{item.name}, #{item.competitionId})
+            ( #{item.collegeId}, #{item.name}, #{item.competitionId}, #{item.sort})
         </foreach>
     </insert>
 

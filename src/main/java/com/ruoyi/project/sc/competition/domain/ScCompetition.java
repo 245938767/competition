@@ -12,7 +12,7 @@ import com.ruoyi.framework.web.domain.BaseEntity;
  * competition对象 sc_competition
  * 
  * @author larthur
- * @date 2024-10-12
+ * @date 2024-10-13
  */
 public class ScCompetition extends BaseEntity
 {
@@ -24,6 +24,10 @@ public class ScCompetition extends BaseEntity
     /** 比赛名称 */
     @Excel(name = "比赛名称")
     private String name;
+
+    /** 当前出场学院 */
+    @Excel(name = "当前出场学院")
+    private Long collageId;
 
     /** college信息 */
     private List<ScCollege> scCollegeList;
@@ -48,6 +52,16 @@ public class ScCompetition extends BaseEntity
         return name;
     }
 
+    public void setCollageId(Long collageId) 
+    {
+        this.collageId = collageId;
+    }
+
+    public Long getCollageId() 
+    {
+        return collageId;
+    }
+
     public List<ScCollege> getScCollegeList()
     {
         return scCollegeList;
@@ -63,6 +77,7 @@ public class ScCompetition extends BaseEntity
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("competiitonId", getCompetiitonId())
             .append("name", getName())
+            .append("collageId", getCollageId())
             .append("scCollegeList", getScCollegeList())
             .toString();
     }
