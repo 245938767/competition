@@ -309,6 +309,10 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         if (scCollageScore.getScoreId() != null || scCollageScore.getScore() == null || scCollageScore.getJudgeId() == null || scCollageScore.getPlayerId() == null) {
             throw new ServiceException("请确保传入参数的完整性");
         }
+        List<ScCollageScore> scCollageScores = scCollageScoreMapper.selectScCollageScoreList(scCollageScore);
+        if(!scCollageScores.isEmpty()){
+           throw new ServiceException("您已评分");
+        }
         return scCollageScoreMapper.insertScCollageScore(scCollageScore) > 0;
     }
 
