@@ -190,7 +190,16 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         if (scColleges.isEmpty()) {
             throw new ServiceException("没有创建学院信息");
         }
+        //清除collegesocre数据
+        List<ScCollageScore> scCollageScores = scCollageScoreMapper.selectScCollageScoreList(null);
+        for (ScCollageScore scCollageScore : scCollageScores) {
+            scCollageScoreMapper.deleteScCollageScoreById(scCollageScore.getId());
+        }
 
+        ScCompetition scCompetition = scCompetitionMapper.selectScCompetitionByCompetiitonId(id);
+        scCompetition.setCurrentType(1L);
+        scCompetition.setCurrentSort(1L);
+        scCompetitionMapper.updateScCompetition(scCompetition);
         List<ScCompetitionSort> combinations = createCombinations(scColleges, id);
         for (ScCompetitionSort combination : combinations) {
             scCompetitionSortMapper.insertScCompetitionSort(combination);
@@ -310,8 +319,8 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
             throw new ServiceException("请确保传入参数的完整性");
         }
         List<ScCollageScore> scCollageScores = scCollageScoreMapper.selectScCollageScoreList(scCollageScore);
-        if(!scCollageScores.isEmpty()){
-           throw new ServiceException("您已评分");
+        if (!scCollageScores.isEmpty()) {
+            throw new ServiceException("您已评分");
         }
         return scCollageScoreMapper.insertScCollageScore(scCollageScore) > 0;
     }
