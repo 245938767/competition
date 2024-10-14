@@ -306,6 +306,7 @@ public class ShiroConfig
         filterChainDefinitionMap.put("/players/**","anon");
         filterChainDefinitionMap.put("/sort/**","anon");
         filterChainDefinitionMap.put("/CollageScore/**","anon");
+        filterChainDefinitionMap.put("/ws/**", "anon");
         // 系统权限列表
         // filterChainDefinitionMap.putAll(SpringUtils.getBean(IMenuService.class).selectPermsAll());
 
