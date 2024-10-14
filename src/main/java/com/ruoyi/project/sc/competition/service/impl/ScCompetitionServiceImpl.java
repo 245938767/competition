@@ -217,10 +217,10 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
             CompetitionListVO competitionListVO = new CompetitionListVO();
 
             ScPlayers scPlayersA = playerCollegeMap.get(competitionSort.getUser1());
-            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName()));
+            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName()));
 
             ScPlayers scPlayersB = playerCollegeMap.get(competitionSort.getUser2());
-            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName()));
+            competitionListVO.setUserB(new CompetitionUser(scPlayersA.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName()));
 
             competitionListVO.setSort(competitionSort.getSort());
             competitionListVO.setSortId(competitionSort.getId());
@@ -301,7 +301,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
 
     @Override
     public boolean judgeScore(ScCollageScore scCollageScore) {
-        if (scCollageScore.getScoreId()!=null ||scCollageScore.getScore() == null || scCollageScore.getJudgeId() == null || scCollageScore.getPlayerId() == null) {
+        if (scCollageScore.getScoreId() != null || scCollageScore.getScore() == null || scCollageScore.getJudgeId() == null || scCollageScore.getPlayerId() == null) {
             throw new ServiceException("请确保传入参数的完整性");
         }
         return scCollageScoreMapper.insertScCollageScore(scCollageScore) > 0;

@@ -18,16 +18,42 @@ public class CompetitionUser implements Serializable {
         this.collage = collage;
     }
 
+    public CompetitionUser(Long collageId, Long sortId, Long playerId, String name, String collage) {
+        this.collageId = collageId;
+        SortId = sortId;
+        this.playerId = playerId;
+        this.name = name;
+        this.collage = collage;
+    }
+
     public CompetitionUser(List<ScCollageScore> scCollageScores, String name, String collage) {
         this.scCollageScores = scCollageScores;
         this.name = name;
         this.collage = collage;
     }
 
+    private Long collageId;
+    private Long SortId;
     private Long playerId;
     private List<ScCollageScore> scCollageScores;
     private String name;
     private String collage;
+
+    public Long getCollageId() {
+        return collageId;
+    }
+
+    public void setCollageId(Long collageId) {
+        this.collageId = collageId;
+    }
+
+    public Long getSortId() {
+        return SortId;
+    }
+
+    public void setSortId(Long sortId) {
+        SortId = sortId;
+    }
 
     public List<ScCollageScore> getScCollageScores() {
         return scCollageScores;
