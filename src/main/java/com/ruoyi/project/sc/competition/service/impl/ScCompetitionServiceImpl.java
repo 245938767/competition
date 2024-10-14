@@ -274,6 +274,31 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         return noticeWebsocketResp;
     }
 
+    @Override
+    public boolean nextPlayer(Long id) {
+        ScCompetitionSort scCompetitionSort = new ScCompetitionSort();
+        scCompetitionSort.setCompetitionId(id);
+        List<ScCompetitionSort> scCompetitionSorts = scCompetitionSortMapper.selectScCompetitionSortList(scCompetitionSort);
+        ScCompetition scCompetition = scCompetitionMapper.selectScCompetitionByCompetiitonId(id);
+        long value = scCompetition.getCurrentSort() + 1;
+        if (value > scCompetitionSorts.size()) {
+            throw new ServiceException("已是最后一场");
+        }
+        scCompetition.setCurrentSort(value);
+        return scCompetitionMapper.updateScCompetition(scCompetition) > 0;
+    }
+
+    @Override
+    public boolean lastPlayer(Long id) {
+        ScCompetition scCompetition = scCompetitionMapper.selectScCompetitionByCompetiitonId(id);
+        long value = scCompetition.getCurrentSort() - 1;
+        if (value < 0) {
+            throw new ServiceException("已经无场次");
+        }
+        scCompetition.setCurrentSort(value);
+        return scCompetitionMapper.updateScCompetition(scCompetition) > 0;
+    }
+
     /**
      * 新增college信息
      *

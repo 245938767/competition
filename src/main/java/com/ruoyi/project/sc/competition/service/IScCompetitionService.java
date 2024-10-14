@@ -106,4 +106,20 @@ public interface IScCompetitionService {
      * @return
      */
     public NoticeWebsocketResp getCurrentCompetitionData(Long id);
+
+    /**
+     * 下一场
+     *
+     * @param id
+     * @return
+     */
+    public boolean nextPlayer(Long id);
+
+    /**
+     * 上一场
+     *
+     * @param id
+     * @return
+     */
+    public boolean lastPlayer(Long id);
 }

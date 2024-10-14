@@ -203,4 +203,22 @@ public class ScCompetitionController extends BaseController {
         return AjaxResult.success(currentCompetitionData);
     }
 
+    @PostMapping("/nextPlayer/{id}")
+    public AjaxResult nextPlayer(@PathVariable Long id) {
+
+        if (scCompetitionService.nextPlayer(id)) {
+            return AjaxResult.success();
+        }
+        return AjaxResult.error();
+    }
+
+    @PostMapping("/LastPlayer/{id}")
+    public AjaxResult lastPlayer(@PathVariable Long id) {
+
+        if (scCompetitionService.nextPlayer(id)) {
+            return AjaxResult.success();
+        }
+        return AjaxResult.error();
+    }
+
 }
