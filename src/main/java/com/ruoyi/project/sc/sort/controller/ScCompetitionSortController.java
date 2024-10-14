@@ -1,6 +1,8 @@
 package com.ruoyi.project.sc.sort.controller;
 
 import java.util.List;
+
+import com.ruoyi.project.socket.CompetitionWebSocket;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,17 +29,17 @@ import com.ruoyi.framework.web.page.TableDataInfo;
  */
 @Controller
 @RequestMapping("/sort/sort")
-public class ScCompetitionSortController extends BaseController
-{
+public class ScCompetitionSortController extends BaseController {
     private String prefix = "sort/sort";
 
     @Autowired
     private IScCompetitionSortService scCompetitionSortService;
+    @Autowired
+    private CompetitionWebSocket competitionWebSocket;
 
     @RequiresPermissions("sort:sort:view")
     @GetMapping()
-    public String sort()
-    {
+    public String sort() {
         return prefix + "/sort";
     }
 
@@ -47,8 +49,7 @@ public class ScCompetitionSortController extends BaseController
     @RequiresPermissions("sort:sort:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list(ScCompetitionSort scCompetitionSort)
-    {
+    public TableDataInfo list(ScCompetitionSort scCompetitionSort) {
         startPage();
         List<ScCompetitionSort> list = scCompetitionSortService.selectScCompetitionSortList(scCompetitionSort);
         return getDataTable(list);
@@ -61,8 +62,7 @@ public class ScCompetitionSortController extends BaseController
     @Log(title = "比赛流程", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ResponseBody
-    public AjaxResult export(ScCompetitionSort scCompetitionSort)
-    {
+    public AjaxResult export(ScCompetitionSort scCompetitionSort) {
         List<ScCompetitionSort> list = scCompetitionSortService.selectScCompetitionSortList(scCompetitionSort);
         ExcelUtil<ScCompetitionSort> util = new ExcelUtil<ScCompetitionSort>(ScCompetitionSort.class);
         return util.exportExcel(list, "比赛流程数据");
@@ -72,8 +72,7 @@ public class ScCompetitionSortController extends BaseController
      * 新增比赛流程
      */
     @GetMapping("/add")
-    public String add()
-    {
+    public String add() {
         return prefix + "/add";
     }
 
@@ -84,8 +83,7 @@ public class ScCompetitionSortController extends BaseController
     @Log(title = "比赛流程", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(ScCompetitionSort scCompetitionSort)
-    {
+    public AjaxResult addSave(ScCompetitionSort scCompetitionSort) {
         return toAjax(scCompetitionSortService.insertScCompetitionSort(scCompetitionSort));
     }
 
@@ -94,8 +92,7 @@ public class ScCompetitionSortController extends BaseController
      */
     @RequiresPermissions("sort:sort:edit")
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, ModelMap mmap)
-    {
+    public String edit(@PathVariable("id") Long id, ModelMap mmap) {
         ScCompetitionSort scCompetitionSort = scCompetitionSortService.selectScCompetitionSortById(id);
         mmap.put("scCompetitionSort", scCompetitionSort);
         return prefix + "/edit";
@@ -108,9 +105,10 @@ public class ScCompetitionSortController extends BaseController
     @Log(title = "比赛流程", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(ScCompetitionSort scCompetitionSort)
-    {
-        return toAjax(scCompetitionSortService.updateScCompetitionSort(scCompetitionSort));
+    public AjaxResult editSave(ScCompetitionSort scCompetitionSort) {
+        int i = scCompetitionSortService.updateScCompetitionSort(scCompetitionSort);
+        competitionWebSocket.sendMessage();
+        return toAjax(i);
     }
 
     /**
@@ -118,10 +116,9 @@ public class ScCompetitionSortController extends BaseController
      */
     @RequiresPermissions("sort:sort:remove")
     @Log(title = "比赛流程", businessType = BusinessType.DELETE)
-    @PostMapping( "/remove")
+    @PostMapping("/remove")
     @ResponseBody
-    public AjaxResult remove(String ids)
-    {
+    public AjaxResult remove(String ids) {
         return toAjax(scCompetitionSortService.deleteScCompetitionSortByIds(ids));
     }
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
 import com.ruoyi.project.sc.competition.domain.CompetitionListVO;
+import com.ruoyi.project.socket.CompetitionWebSocket;
 import com.ruoyi.project.socket.NoticeWebsocketResp;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -35,6 +36,8 @@ public class ScCompetitionController extends BaseController {
 
     @Autowired
     private IScCompetitionService scCompetitionService;
+    @Autowired
+    private CompetitionWebSocket competitionWebSocket;
 
     @RequiresPermissions("competition:competition:view")
     @GetMapping()
@@ -130,6 +133,7 @@ public class ScCompetitionController extends BaseController {
     public AjaxResult cleanCompetitionData(@PathVariable Long id) {
         if (scCompetitionService.cleanCompetitionData(id)) {
 
+            competitionWebSocket.sendMessage();
             return AjaxResult.success();
         }
         return AjaxResult.error();
@@ -147,6 +151,7 @@ public class ScCompetitionController extends BaseController {
 
         if (scCompetitionService.saveCompetition()) {
 
+            competitionWebSocket.sendMessage();
             return AjaxResult.success();
         }
         return AjaxResult.error();
@@ -165,6 +170,7 @@ public class ScCompetitionController extends BaseController {
     public AjaxResult startCompetitionApi(@Param("id") Long id, @Param("type") Long type) {
 
         if (scCompetitionService.startCompetition(id, type)) {
+            competitionWebSocket.sendMessage();
             return AjaxResult.success();
         }
         return AjaxResult.error();
@@ -175,6 +181,7 @@ public class ScCompetitionController extends BaseController {
     @ResponseBody
     public AjaxResult reloadSort(@PathVariable Long id) {
         if (scCompetitionService.restoreSort(id)) {
+            competitionWebSocket.sendMessage();
             return AjaxResult.success();
         }
         return AjaxResult.error();
@@ -205,6 +212,7 @@ public class ScCompetitionController extends BaseController {
     public AjaxResult nextPlayer(@PathVariable Long id) {
 
         if (scCompetitionService.nextPlayer(id)) {
+            competitionWebSocket.sendMessage();
             return AjaxResult.success();
         }
         return AjaxResult.error();
@@ -215,6 +223,7 @@ public class ScCompetitionController extends BaseController {
     public AjaxResult lastPlayer(@PathVariable Long id) {
 
         if (scCompetitionService.nextPlayer(id)) {
+            competitionWebSocket.sendMessage();
             return AjaxResult.success();
         }
         return AjaxResult.error();
@@ -231,6 +240,7 @@ public class ScCompetitionController extends BaseController {
     public AjaxResult judgeScore(@RequestBody ScCollageScore scCollageScore) {
 
         if (scCompetitionService.judgeScore(scCollageScore)) {
+            competitionWebSocket.sendMessage();
             return AjaxResult.success();
         }
         return AjaxResult.error();
