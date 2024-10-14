@@ -2,6 +2,7 @@ package com.ruoyi.project.sc.competition.service;
 
 import java.util.List;
 
+import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
 import com.ruoyi.project.sc.competition.domain.CompetitionListVO;
 import com.ruoyi.project.sc.competition.domain.ScCompetition;
 import com.ruoyi.project.socket.NoticeWebsocketResp;
@@ -122,4 +123,12 @@ public interface IScCompetitionService {
      * @return
      */
     public boolean lastPlayer(Long id);
+
+    /**
+     * 评委评分
+     *
+     * @param scCollageScore
+     * @return
+     */
+    public boolean judgeScore(ScCollageScore scCollageScore);
 }

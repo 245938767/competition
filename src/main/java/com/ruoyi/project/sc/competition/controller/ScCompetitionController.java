@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
 import com.ruoyi.project.sc.competition.domain.CompetitionListVO;
 import com.ruoyi.project.socket.NoticeWebsocketResp;
 import org.apache.ibatis.annotations.Param;
@@ -11,11 +12,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
 import com.ruoyi.project.sc.competition.domain.ScCompetition;
@@ -204,6 +201,7 @@ public class ScCompetitionController extends BaseController {
     }
 
     @PostMapping("/nextPlayer/{id}")
+    @ResponseBody
     public AjaxResult nextPlayer(@PathVariable Long id) {
 
         if (scCompetitionService.nextPlayer(id)) {
@@ -213,9 +211,26 @@ public class ScCompetitionController extends BaseController {
     }
 
     @PostMapping("/LastPlayer/{id}")
+    @ResponseBody
     public AjaxResult lastPlayer(@PathVariable Long id) {
 
         if (scCompetitionService.nextPlayer(id)) {
+            return AjaxResult.success();
+        }
+        return AjaxResult.error();
+    }
+
+    /**
+     * 评委评分
+     *
+     * @param scCollageScore
+     * @return
+     */
+    @PostMapping("/judgeScore")
+    @ResponseBody
+    public AjaxResult judgeScore(@RequestBody ScCollageScore scCollageScore) {
+
+        if (scCompetitionService.judgeScore(scCollageScore)) {
             return AjaxResult.success();
         }
         return AjaxResult.error();

@@ -293,10 +293,18 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         ScCompetition scCompetition = scCompetitionMapper.selectScCompetitionByCompetiitonId(id);
         long value = scCompetition.getCurrentSort() - 1;
         if (value < 0) {
-            throw new ServiceException("已经无场次");
+            throw new ServiceException("已无场次");
         }
         scCompetition.setCurrentSort(value);
         return scCompetitionMapper.updateScCompetition(scCompetition) > 0;
+    }
+
+    @Override
+    public boolean judgeScore(ScCollageScore scCollageScore) {
+        if (scCollageScore.getScore() == null || scCollageScore.getJudgeId() == null || scCollageScore.getPlayerId() == null) {
+            throw new ServiceException("请确保传入参数的完整性");
+        }
+        return scCollageScoreMapper.insertScCollageScore(scCollageScore) > 0;
     }
 
     /**
