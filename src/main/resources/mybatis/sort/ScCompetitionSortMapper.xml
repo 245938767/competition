@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.project.sc.sort.mapper.ScCompetitionSortMapper">
-    
+
     <resultMap type="ScCompetitionSort" id="ScCompetitionSortResult">
         <result property="id"    column="id"    />
         <result property="user1"    column="user1"    />
@@ -14,13 +14,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="collageId"    column="collage_id"    />
     </resultMap>
 
+    <resultMap id="ScCompetitionSortScCollageScoreResult" type="ScCompetitionSort" extends="ScCompetitionSortResult">
+        <collection property="scCollageScoreList" ofType="ScCollageScore" column="id" select="selectScCollageScoreList" />
+    </resultMap>
+
+    <resultMap type="ScCollageScore" id="ScCollageScoreResult">
+        <result property="id"    column="id"    />
+        <result property="collegeId"    column="college_id"    />
+        <result property="playerId"    column="player_id"    />
+        <result property="judgeId"    column="judge_id"    />
+        <result property="score"    column="score"    />
+        <result property="scoreId"    column="score_id"    />
+    </resultMap>
+
     <sql id="selectScCompetitionSortVo">
         select id, user1, user2, sort, competition_id, type, collage_id from sc_competition_sort
     </sql>
 
     <select id="selectScCompetitionSortList" parameterType="ScCompetitionSort" resultMap="ScCompetitionSortResult">
         <include refid="selectScCompetitionSortVo"/>
-        <where>  
+        <where>
             <if test="user1 != null "> and user1 = #{user1}</if>
             <if test="user2 != null "> and user2 = #{user2}</if>
             <if test="sort != null "> and sort = #{sort}</if>
@@ -29,10 +42,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="collageId != null "> and collage_id = #{collageId}</if>
         </where>
     </select>
-    
-    <select id="selectScCompetitionSortById" parameterType="Long" resultMap="ScCompetitionSortResult">
-        <include refid="selectScCompetitionSortVo"/>
+
+    <select id="selectScCompetitionSortById" parameterType="Long" resultMap="ScCompetitionSortScCollageScoreResult">
+        select id, user1, user2, sort, competition_id, type, collage_id
+        from sc_competition_sort
         where id = #{id}
+    </select>
+
+    <select id="selectScCollageScoreList" resultMap="ScCollageScoreResult">
+        select id, college_id, player_id, judge_id, score, score_id
+        from sc_collage_score
+        where score_id = #{score_id}
     </select>
 
     <insert id="insertScCompetitionSort" parameterType="ScCompetitionSort" useGeneratedKeys="true" keyProperty="id">
@@ -44,7 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="competitionId != null">competition_id,</if>
             <if test="type != null">type,</if>
             <if test="collageId != null">collage_id,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="user1 != null">#{user1},</if>
             <if test="user2 != null">#{user2},</if>
@@ -52,7 +72,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="competitionId != null">#{competitionId},</if>
             <if test="type != null">#{type},</if>
             <if test="collageId != null">#{collageId},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateScCompetitionSort" parameterType="ScCompetitionSort">
@@ -73,10 +93,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteScCompetitionSortByIds" parameterType="String">
-        delete from sc_competition_sort where id in 
+        delete from sc_competition_sort where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
+
+    <delete id="deleteScCollageScoreByScoreIds" parameterType="String">
+        delete from sc_collage_score where score_id in
+        <foreach item="scoreId" collection="array" open="(" separator="," close=")">
+            #{scoreId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteScCollageScoreByScoreId" parameterType="Long">
+        delete from sc_collage_score where score_id = #{scoreId}
+    </delete>
+
+    <insert id="batchScCollageScore">
+        insert into sc_collage_score( id, college_id, player_id, judge_id, score, score_id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.collegeId}, #{item.playerId}, #{item.judgeId}, #{item.score}, #{item.scoreId})
+        </foreach>
+    </insert>
 
 </mapper>

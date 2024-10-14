@@ -1,5 +1,6 @@
 package com.ruoyi.project.sc.CollageScore.domain;
 
+import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.framework.aspectj.lang.annotation.Excel;
@@ -7,9 +8,9 @@ import com.ruoyi.framework.web.domain.BaseEntity;
 
 /**
  * CollageScore对象 sc_collage_score
- * 
+ *
  * @author larthur
- * @date 2024-10-13
+ * @date 2024-10-14
  */
 public class ScCollageScore extends BaseEntity
 {
@@ -34,64 +35,79 @@ public class ScCollageScore extends BaseEntity
     @Excel(name = "分数")
     private Long score;
 
-    public void setId(Long id) 
+    /** 对应场次ID */
+    @Excel(name = "对应场次ID")
+    private Long scoreId;
+
+    public void setId(Long id)
     {
         this.id = id;
     }
 
-    public Long getId() 
+    public Long getId()
     {
         return id;
     }
 
-    public void setCollegeId(Long collegeId) 
+    public void setCollegeId(Long collegeId)
     {
         this.collegeId = collegeId;
     }
 
-    public Long getCollegeId() 
+    public Long getCollegeId()
     {
         return collegeId;
     }
 
-    public void setPlayerId(Long playerId) 
+    public void setPlayerId(Long playerId)
     {
         this.playerId = playerId;
     }
 
-    public Long getPlayerId() 
+    public Long getPlayerId()
     {
         return playerId;
     }
 
-    public void setJudgeId(Long judgeId) 
+    public void setJudgeId(Long judgeId)
     {
         this.judgeId = judgeId;
     }
 
-    public Long getJudgeId() 
+    public Long getJudgeId()
     {
         return judgeId;
     }
 
-    public void setScore(Long score) 
+    public void setScore(Long score)
     {
         this.score = score;
     }
 
-    public Long getScore() 
+    public Long getScore()
     {
         return score;
+    }
+
+    public void setScoreId(Long scoreId)
+    {
+        this.scoreId = scoreId;
+    }
+
+    public Long getScoreId()
+    {
+        return scoreId;
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("collegeId", getCollegeId())
-            .append("playerId", getPlayerId())
-            .append("judgeId", getJudgeId())
-            .append("score", getScore())
-            .toString();
+                .append("id", getId())
+                .append("collegeId", getCollegeId())
+                .append("playerId", getPlayerId())
+                .append("judgeId", getJudgeId())
+                .append("score", getScore())
+                .append("scoreId", getScoreId())
+                .toString();
     }
 }

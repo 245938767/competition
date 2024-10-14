@@ -1,5 +1,8 @@
 package com.ruoyi.project.sc.sort.domain;
 
+import java.util.List;
+
+import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.framework.aspectj.lang.annotation.Excel;
@@ -7,9 +10,9 @@ import com.ruoyi.framework.web.domain.BaseEntity;
 
 /**
  * 比赛流程对象 sc_competition_sort
- * 
+ *
  * @author larthur
- * @date 2024-10-13
+ * @date 2024-10-14
  */
 public class ScCompetitionSort extends BaseEntity
 {
@@ -42,86 +45,100 @@ public class ScCompetitionSort extends BaseEntity
     @Excel(name = "学院ID")
     private Long collageId;
 
-    public void setId(Long id) 
+    /** CollageScore信息 */
+    private List<ScCollageScore> scCollageScoreList;
+
+    public void setId(Long id)
     {
         this.id = id;
     }
 
-    public Long getId() 
+    public Long getId()
     {
         return id;
     }
 
-    public void setUser1(Long user1) 
+    public void setUser1(Long user1)
     {
         this.user1 = user1;
     }
 
-    public Long getUser1() 
+    public Long getUser1()
     {
         return user1;
     }
 
-    public void setUser2(Long user2) 
+    public void setUser2(Long user2)
     {
         this.user2 = user2;
     }
 
-    public Long getUser2() 
+    public Long getUser2()
     {
         return user2;
     }
 
-    public void setSort(Long sort) 
+    public void setSort(Long sort)
     {
         this.sort = sort;
     }
 
-    public Long getSort() 
+    public Long getSort()
     {
         return sort;
     }
 
-    public void setCompetitionId(Long competitionId) 
+    public void setCompetitionId(Long competitionId)
     {
         this.competitionId = competitionId;
     }
 
-    public Long getCompetitionId() 
+    public Long getCompetitionId()
     {
         return competitionId;
     }
 
-    public void setType(Long type) 
+    public void setType(Long type)
     {
         this.type = type;
     }
 
-    public Long getType() 
+    public Long getType()
     {
         return type;
     }
 
-    public void setCollageId(Long collageId) 
+    public void setCollageId(Long collageId)
     {
         this.collageId = collageId;
     }
 
-    public Long getCollageId() 
+    public Long getCollageId()
     {
         return collageId;
+    }
+
+    public List<ScCollageScore> getScCollageScoreList()
+    {
+        return scCollageScoreList;
+    }
+
+    public void setScCollageScoreList(List<ScCollageScore> scCollageScoreList)
+    {
+        this.scCollageScoreList = scCollageScoreList;
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("user1", getUser1())
-            .append("user2", getUser2())
-            .append("sort", getSort())
-            .append("competitionId", getCompetitionId())
-            .append("type", getType())
-            .append("collageId", getCollageId())
-            .toString();
+                .append("id", getId())
+                .append("user1", getUser1())
+                .append("user2", getUser2())
+                .append("sort", getSort())
+                .append("competitionId", getCompetitionId())
+                .append("type", getType())
+                .append("collageId", getCollageId())
+                .append("scCollageScoreList", getScCollageScoreList())
+                .toString();
     }
 }

@@ -4,73 +4,77 @@
     <th:block th:include="include :: header('CollageScore列表')" />
 </head>
 <body class="gray-bg">
-     <div class="container-div">
-        <div class="row">
-            <div class="col-sm-12 search-collapse">
-                <form id="formId">
-                    <div class="select-list">
-                        <ul>
-                            <li>
-                                <label>学院：</label>
-                                <input type="text" name="collegeId"/>
-                            </li>
-                            <li>
-                                <label>玩家：</label>
-                                <input type="text" name="playerId"/>
-                            </li>
-                            <li>
-                                <label>评委：</label>
-                                <input type="text" name="judgeId"/>
-                            </li>
-                            <li>
-                                <label>分数：</label>
-                                <input type="text" name="score"/>
-                            </li>
-                            <li>
-                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
-                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
-                            </li>
-                        </ul>
-                    </div>
-                </form>
-            </div>
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <label>学院：</label>
+                            <input type="text" name="collegeId"/>
+                        </li>
+                        <li>
+                            <label>玩家：</label>
+                            <input type="text" name="playerId"/>
+                        </li>
+                        <li>
+                            <label>评委：</label>
+                            <input type="text" name="judgeId"/>
+                        </li>
+                        <li>
+                            <label>分数：</label>
+                            <input type="text" name="score"/>
+                        </li>
+                        <li>
+                            <label>对应场次ID：</label>
+                            <input type="text" name="scoreId"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
 
-            <div class="btn-group-sm" id="toolbar" role="group">
-                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="CollageScore:CollageScore:add">
-                    <i class="fa fa-plus"></i> 添加
-                </a>
-                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="CollageScore:CollageScore:edit">
-                    <i class="fa fa-edit"></i> 修改
-                </a>
-                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="CollageScore:CollageScore:remove">
-                    <i class="fa fa-remove"></i> 删除
-                </a>
-                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="CollageScore:CollageScore:export">
-                    <i class="fa fa-download"></i> 导出
-                </a>
-            </div>
-            <div class="col-sm-12 select-table table-striped">
-                <table id="bootstrap-table"></table>
-            </div>
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="CollageScore:CollageScore:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="CollageScore:CollageScore:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="CollageScore:CollageScore:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="CollageScore:CollageScore:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
         </div>
     </div>
-    <th:block th:include="include :: footer" />
-    <script th:inline="javascript">
-        var editFlag = [[${@permission.hasPermi('CollageScore:CollageScore:edit')}]];
-        var removeFlag = [[${@permission.hasPermi('CollageScore:CollageScore:remove')}]];
-        var prefix = ctx + "CollageScore/CollageScore";
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('CollageScore:CollageScore:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('CollageScore:CollageScore:remove')}]];
+    var prefix = ctx + "CollageScore/CollageScore";
 
-        $(function() {
-            var options = {
-                url: prefix + "/list",
-                createUrl: prefix + "/add",
-                updateUrl: prefix + "/edit/{id}",
-                removeUrl: prefix + "/remove",
-                exportUrl: prefix + "/export",
-                modalName: "CollageScore",
-                columns: [{
-                    checkbox: true
-                },
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "CollageScore",
+            columns: [{
+                checkbox: true
+            },
                 {
                     field: 'id',
                     title: '',
@@ -93,6 +97,10 @@
                     title: '分数'
                 },
                 {
+                    field: 'scoreId',
+                    title: '对应场次ID'
+                },
+                {
                     title: '操作',
                     align: 'center',
                     formatter: function(value, row, index) {
@@ -102,9 +110,9 @@
                         return actions.join('');
                     }
                 }]
-            };
-            $.table.init(options);
-        });
-    </script>
+        };
+        $.table.init(options);
+    });
+</script>
 </body>
 </html>

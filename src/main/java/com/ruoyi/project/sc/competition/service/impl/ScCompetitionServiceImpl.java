@@ -301,7 +301,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
 
     @Override
     public boolean judgeScore(ScCollageScore scCollageScore) {
-        if (scCollageScore.getScore() == null || scCollageScore.getJudgeId() == null || scCollageScore.getPlayerId() == null) {
+        if (scCollageScore.getScoreId()!=null ||scCollageScore.getScore() == null || scCollageScore.getJudgeId() == null || scCollageScore.getPlayerId() == null) {
             throw new ServiceException("请确保传入参数的完整性");
         }
         return scCollageScoreMapper.insertScCollageScore(scCollageScore) > 0;
@@ -321,7 +321,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                 scCollege.setCompetitionId(competiitonId);
                 list.add(scCollege);
             }
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
                 scCompetitionMapper.batchScCollege(list);
             }
         }

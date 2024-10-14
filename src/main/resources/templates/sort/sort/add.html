@@ -4,72 +4,163 @@
     <th:block th:include="include :: header('新增比赛流程')" />
 </head>
 <body class="white-bg">
-    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
-        <form class="form-horizontal m" id="form-sort-add">
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label is-required">用户1：</label>
-                    <div class="col-sm-8">
-                        <input name="user1" class="form-control" type="text" required>
-                    </div>
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-sort-add">
+        <h4 class="form-header h4">比赛流程信息</h4>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">用户1：</label>
+                <div class="col-sm-8">
+                    <input name="user1" class="form-control" type="text" required>
                 </div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label is-required">用户2：</label>
-                    <div class="col-sm-8">
-                        <input name="user2" class="form-control" type="text" required>
-                    </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">用户2：</label>
+                <div class="col-sm-8">
+                    <input name="user2" class="form-control" type="text" required>
                 </div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label is-required">排序：</label>
-                    <div class="col-sm-8">
-                        <input name="sort" class="form-control" type="text" required>
-                    </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">排序：</label>
+                <div class="col-sm-8">
+                    <input name="sort" class="form-control" type="text" required>
                 </div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label is-required">比赛ID：</label>
-                    <div class="col-sm-8">
-                        <input name="competitionId" class="form-control" type="text" required>
-                    </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">比赛ID：</label>
+                <div class="col-sm-8">
+                    <input name="competitionId" class="form-control" type="text" required>
                 </div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label is-required">比赛类型：</label>
-                    <div class="col-sm-8">
-                        <select name="type" class="form-control" th:with="type=${@dict.getType('competition_type')}" required>
-                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
-                        </select>
-                    </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">比赛类型：</label>
+                <div class="col-sm-8">
+                    <select name="type" class="form-control" th:with="type=${@dict.getType('competition_type')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
                 </div>
             </div>
-            <div class="col-xs-12">
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">学院ID：</label>
-                    <div class="col-sm-8">
-                        <input name="collageId" class="form-control" type="text">
-                    </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">学院ID：</label>
+                <div class="col-sm-8">
+                    <input name="collageId" class="form-control" type="text">
                 </div>
             </div>
-        </form>
-    </div>
-    <th:block th:include="include :: footer" />
-    <script th:inline="javascript">
-        var prefix = ctx + "sort/sort"
-        $("#form-sort-add").validate({
-            focusCleanup: true
-        });
+        </div>
+        <h4 class="form-header h4">CollageScore信息</h4>
+        <div class="row">
+            <div class="col-xs-12">
+                <button type="button" class="btn btn-white btn-sm" onclick="addRow()"><i class="fa fa-plus"> 增加</i></button>
+                <button type="button" class="btn btn-white btn-sm" onclick="sub.delRow()"><i class="fa fa-minus"> 删除</i></button>
+                <div class="col-sm-12 select-table table-striped">
+                    <table id="bootstrap-table"></table>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var prefix = ctx + "sort/sort"
+    $("#form-sort-add").validate({
+        focusCleanup: true
+    });
 
-        function submitHandler() {
-            if ($.validate.form()) {
-                $.operate.save(prefix + "/add", $('#form-sort-add').serialize());
-            }
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-sort-add').serialize());
         }
-    </script>
+    }
+
+    $(function() {
+        var options = {
+            pagination: false,
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            sidePagination: "client",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'index',
+                    align: 'center',
+                    title: "序号",
+                    formatter: function (value, row, index) {
+                        var columnIndex = $.common.sprintf("<input type='hidden' name='index' value='%s'>", $.table.serialNumber(index));
+                        return columnIndex + $.table.serialNumber(index);
+                    }
+                },
+                {
+                    field: 'collegeId',
+                    align: 'center',
+                    title: '学院',
+                    formatter: function(value, row, index) {
+                        var html = $.common.sprintf("<input class='form-control' type='text' name='scCollageScoreList[%s].collegeId' value='%s'>", index, value);
+                        return html;
+                    }
+                },
+                {
+                    field: 'playerId',
+                    align: 'center',
+                    title: '玩家',
+                    formatter: function(value, row, index) {
+                        var html = $.common.sprintf("<input class='form-control' type='text' name='scCollageScoreList[%s].playerId' value='%s'>", index, value);
+                        return html;
+                    }
+                },
+                {
+                    field: 'judgeId',
+                    align: 'center',
+                    title: '评委',
+                    formatter: function(value, row, index) {
+                        var html = $.common.sprintf("<input class='form-control' type='text' name='scCollageScoreList[%s].judgeId' value='%s'>", index, value);
+                        return html;
+                    }
+                },
+                {
+                    field: 'score',
+                    align: 'center',
+                    title: '分数',
+                    formatter: function(value, row, index) {
+                        var html = $.common.sprintf("<input class='form-control' type='text' name='scCollageScoreList[%s].score' value='%s'>", index, value);
+                        return html;
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var value = $.common.isNotEmpty(row.index) ? row.index : $.table.serialNumber(index);
+                        return '<a class="btn btn-danger btn-xs" href="javascript:void(0)" onclick="sub.delRowByIndex(\'' + value + '\')"><i class="fa fa-remove"></i>删除</a>';
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function addRow() {
+        var count = $("#" + table.options.id).bootstrapTable('getData').length;
+        var row = {
+            index: $.table.serialNumber(count),
+            collegeId: "",
+            playerId: "",
+            judgeId: "",
+            score: "",
+        }
+        sub.addRow(row);
+    }
+</script>
 </body>
 </html>
