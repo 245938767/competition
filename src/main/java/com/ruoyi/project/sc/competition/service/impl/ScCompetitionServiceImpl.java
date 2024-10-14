@@ -136,6 +136,10 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                 scCompetitionSortMapper.deleteScCompetitionSortByIds(scCompetitionSorts.stream().map(x -> String.valueOf(x.getId())).toArray(String[]::new));
             }
             //clear competition state
+            ScCompetition scCompetition = scCompetitionMapper.selectScCompetitionByCompetiitonId(id);
+            scCompetition.setCurrentSort(0L);
+            scCompetition.setCurrentType(0L);
+            scCompetitionMapper.updateScCompetition(scCompetition);
         } catch (Exception e) {
             return false;
         }
@@ -195,7 +199,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
     }
 
     @Override
-    public List<CompetitionListVO> selectbatchCompetitionList(Long id,Long type) {
+    public List<CompetitionListVO> selectbatchCompetitionList(Long id, Long type) {
 
         List<CompetitionListVO> list = new ArrayList<>();
 
@@ -245,7 +249,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
 
         competitionCurrentData.setCurrentSort(scCompetition.getCurrentSort());
         competitionCurrentData.setCurrentType(scCompetition.getCurrentType());
-        List<CompetitionListVO> competitionListVOS = selectbatchCompetitionList(id,scCompetition.getCurrentType());
+        List<CompetitionListVO> competitionListVOS = selectbatchCompetitionList(id, scCompetition.getCurrentType());
         noticeWebsocketResp.setCompetitionListVOList(competitionListVOS);
 
         if (scCompetition.getCurrentSort() > 0L) {
