@@ -195,12 +195,13 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
     }
 
     @Override
-    public List<CompetitionListVO> selectbatchCompetitionList(Long id) {
+    public List<CompetitionListVO> selectbatchCompetitionList(Long id,Long type) {
 
         List<CompetitionListVO> list = new ArrayList<>();
 
         ScCompetitionSort scCompetitionSort = new ScCompetitionSort();
         scCompetitionSort.setCompetitionId(id);
+        scCompetitionSort.setType(type);
         List<ScCompetitionSort> scCompetitionSorts = scCompetitionSortMapper.selectScCompetitionSortList(scCompetitionSort);
         if (scCompetitionSorts.isEmpty()) {
             return list;
@@ -220,7 +221,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
             competitionListVO.setUserA(new CompetitionUser(scPlayersA.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName()));
 
             ScPlayers scPlayersB = playerCollegeMap.get(competitionSort.getUser2());
-            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName()));
+            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getCollegeId(), competitionSort.getId(), scPlayersB.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName()));
 
             competitionListVO.setSort(competitionSort.getSort());
             competitionListVO.setSortId(competitionSort.getId());
@@ -238,14 +239,14 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
     public NoticeWebsocketResp getCurrentCompetitionData(Long id) {
         NoticeWebsocketResp noticeWebsocketResp = new NoticeWebsocketResp();
 
-        List<CompetitionListVO> competitionListVOS = selectbatchCompetitionList(id);
-        noticeWebsocketResp.setCompetitionListVOList(competitionListVOS);
 
         ScCompetition scCompetition = scCompetitionMapper.selectScCompetitionByCompetiitonId(id);
         CompetitionCurrentData competitionCurrentData = new CompetitionCurrentData();
 
         competitionCurrentData.setCurrentSort(scCompetition.getCurrentSort());
         competitionCurrentData.setCurrentType(scCompetition.getCurrentType());
+        List<CompetitionListVO> competitionListVOS = selectbatchCompetitionList(id,scCompetition.getCurrentType());
+        noticeWebsocketResp.setCompetitionListVOList(competitionListVOS);
 
         if (scCompetition.getCurrentSort() > 0L) {
             Optional<CompetitionListVO> first = competitionListVOS.stream().filter(x -> Objects.equals(x.getSort(), scCompetition.getCurrentSort())).findFirst();
@@ -330,28 +331,36 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
 
     public static List<ScCompetitionSort> createCombinations(List<ScCollege> colleges, Long competiitonId) {
         List<ScCompetitionSort> combinations = new ArrayList<>();
-        List<ScPlayers> allPlayers = new ArrayList<>();
+        List<ScPlayers> allAPlayers = new ArrayList<>();
+        List<ScPlayers> allBPlayers = new ArrayList<>();
         Map<ScPlayers, ScCollege> playerCollegeMap = new HashMap<>();
+        Map<Long, ScCollege> playerCollegeTwoMap = new HashMap<>();
 
         // 收集所有玩家并建立玩家与学院的映射
         for (ScCollege college : colleges) {
             for (ScPlayers player : college.getScPlayersList()) {
-                if (player.getType() == 1 || player.getType() == 2) {
-                    allPlayers.add(player);
-                    playerCollegeMap.put(player, college);
+                if (player.getType() == 1) {
+                    allAPlayers.add(player);
+                } else if (player.getType() == 2) {
+
+                    allBPlayers.add(player);
                 }
+
+                playerCollegeMap.put(player, college);
             }
+            playerCollegeTwoMap.put(college.getCollegeId(), college);
         }
 
         // 打乱玩家顺序以确保随机性
-        Collections.shuffle(allPlayers);
+        Collections.shuffle(allAPlayers);
+        Collections.shuffle(allBPlayers);
 
-        for (int i = 0; i < allPlayers.size(); i++) {
-            ScPlayers playerA = allPlayers.get(i);
+        for (int i = 0; i < allAPlayers.size(); i++) {
+            ScPlayers playerA = allAPlayers.get(i);
             ScCollege collegeA = playerCollegeMap.get(playerA);
 
-            for (int j = i + 1; j < allPlayers.size(); j++) {
-                ScPlayers playerB = allPlayers.get(j);
+            for (int j = 0; j < allBPlayers.size(); j++) {
+                ScPlayers playerB = allBPlayers.get(j);
                 ScCollege collegeB = playerCollegeMap.get(playerB);
 
                 // 检查是否满足匹配条件
@@ -365,12 +374,26 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                     scCompetitionSort.setType(1L);
 
                     combinations.add(scCompetitionSort);
-                    allPlayers.remove(j); // 移除已匹配的玩家B
+                    allBPlayers.remove(j); // 移除已匹配的玩家B
                     break;
                 }
             }
         }
 
+        ArrayList<ScCompetitionSort> scCompetitions = new ArrayList<>();
+        for (ScCompetitionSort combination : combinations) {
+
+            ScCollege scCollege = playerCollegeTwoMap.get(combination.getCollageId());
+            ScCompetitionSort scCompetitionSort = new ScCompetitionSort();
+            scCompetitionSort.setCompetitionId(competiitonId);
+            scCompetitionSort.setSort(combination.getSort());
+            scCompetitionSort.setCollageId(combination.getCollageId());
+            scCompetitionSort.setUser1(scCollege.getScPlayersList().get(2).getPlayerId());
+            scCompetitionSort.setUser2(scCollege.getScPlayersList().get(3).getPlayerId());
+            scCompetitionSort.setType(3L);
+            scCompetitions.add(scCompetitionSort);
+        }
+        combinations.addAll(scCompetitions);
         return combinations;
     }
 

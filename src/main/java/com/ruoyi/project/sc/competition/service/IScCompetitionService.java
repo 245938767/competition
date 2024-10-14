@@ -96,7 +96,7 @@ public interface IScCompetitionService {
      * @param id
      * @return
      */
-    public List<CompetitionListVO> selectbatchCompetitionList(Long id);
+    public List<CompetitionListVO> selectbatchCompetitionList(Long id,Long type);
 
     public ScCompetition getCurrentCompetition(Long id);
 
