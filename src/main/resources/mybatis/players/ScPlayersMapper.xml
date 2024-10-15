@@ -9,6 +9,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="name"    column="name"    />
         <result property="collegeId"    column="college_id"    />
         <result property="type"    column="type"    />
+        <result property="basicScore"    column="basic_score"    />
 
         <collection property="scColleges" ofType="ScCollege" column="college_id" select="selectScCollegeByCollegeId"/>
     </resultMap>
@@ -21,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectScPlayersVo">
-        select player_id, name, college_id, type from sc_players
+        select player_id, name, college_id, type, basic_score from sc_players
     </sql>
     <select id="selectScCollegeByCollegeId" parameterType="Long" resultMap="ScCollegeResult">
         select college_id, name, competition_id, sort
@@ -34,6 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="collegeId != null "> and college_id = #{collegeId}</if>
             <if test="type != null "> and type = #{type}</if>
+            <if test="basicScore != null "> and basic_score = #{basicScore}</if>
         </where>
     </select>
     
@@ -48,11 +50,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null and name != ''">name,</if>
             <if test="collegeId != null">college_id,</if>
             <if test="type != null">type,</if>
+            <if test="basicScore != null">basic_score,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="collegeId != null">#{collegeId},</if>
             <if test="type != null">#{type},</if>
+            <if test="basicScore != null">#{basicScore},</if>
          </trim>
     </insert>
 
@@ -62,6 +66,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null and name != ''">name = #{name},</if>
             <if test="collegeId != null">college_id = #{collegeId},</if>
             <if test="type != null">type = #{type},</if>
+            <if test="basicScore != null">basic_score = #{basicScore},</if>
         </trim>
         where player_id = #{playerId}
     </update>

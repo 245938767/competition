@@ -23,7 +23,7 @@ import com.ruoyi.framework.web.page.TableDataInfo;
  * playersController
  * 
  * @author larthur
- * @date 2024-10-13
+ * @date 2024-10-15
  */
 @Controller
 @RequestMapping("/players/players")

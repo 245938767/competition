@@ -7,7 +7,7 @@ import com.ruoyi.project.sc.players.domain.ScPlayers;
  * playersMapper接口
  * 
  * @author larthur
- * @date 2024-10-13
+ * @date 2024-10-15
  */
 public interface ScPlayersMapper 
 {
