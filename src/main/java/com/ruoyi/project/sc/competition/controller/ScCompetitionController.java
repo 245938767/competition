@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
 import com.ruoyi.project.sc.competition.domain.CompetitionListVO;
+import com.ruoyi.project.sc.competition.domain.RankVo;
 import com.ruoyi.project.socket.CompetitionWebSocket;
 import com.ruoyi.project.socket.NoticeWebsocketResp;
 import org.apache.ibatis.annotations.Param;
@@ -180,11 +181,7 @@ public class ScCompetitionController extends BaseController {
     @PostMapping("/reloadSort/{id}")
     @ResponseBody
     public AjaxResult reloadSort(@PathVariable Long id) {
-        if (scCompetitionService.restoreSort(id)) {
-            competitionWebSocket.sendMessage();
-            return AjaxResult.success();
-        }
-        return AjaxResult.error();
+        return AjaxResult.success(scCompetitionService.restoreSort(id));
     }
 
     @PostMapping("/selectCompetitionVOList/{id}")
@@ -192,7 +189,7 @@ public class ScCompetitionController extends BaseController {
     public AjaxResult selectCompetitionVOList(@PathVariable Long id) {
 
         ScCompetition currentCompetition = scCompetitionService.getCurrentCompetition(id);
-        List<CompetitionListVO> competitionListVOS = scCompetitionService.selectbatchCompetitionList(id,currentCompetition.getCurrentType());
+        List<CompetitionListVO> competitionListVOS = scCompetitionService.selectbatchCompetitionList(id, currentCompetition.getCurrentType());
         Map<String, Object> stringObjectMap = new HashMap<>();
         stringObjectMap.put("list", competitionListVOS);
         stringObjectMap.put("sort", currentCompetition.getCurrentSort());
@@ -245,6 +242,13 @@ public class ScCompetitionController extends BaseController {
             return AjaxResult.success();
         }
         return AjaxResult.error();
+    }
+
+    @PostMapping("/TournamentRanking")
+    @ResponseBody
+    public AjaxResult TournamentRanking(Long id) {
+        HashMap<String, List<RankVo>> stringListHashMap = new HashMap<>();
+        return AjaxResult.success(stringListHashMap);
     }
 
 }
