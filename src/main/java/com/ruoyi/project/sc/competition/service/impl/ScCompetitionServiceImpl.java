@@ -170,7 +170,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
 
     @Transactional
     @Override
-    public List<ScCompetitionSort> restoreSort(Long id) {
+    public List<CompetitionListVO> restoreSort(Long id) {
 
         ScCompetitionSort scCompetitionSort = new ScCompetitionSort();
         scCompetitionSort.setCompetitionId(id);
@@ -201,7 +201,30 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         for (ScCompetitionSort combination : combinations) {
             scCompetitionSortMapper.insertScCompetitionSort(combination);
         }
-        return combinations;
+
+        List<CompetitionListVO> list = new ArrayList<>();
+        ScPlayers scPlayers = new ScPlayers();
+        List<ScPlayers> scPlayers1 = scPlayersMapper.selectScPlayersList(scPlayers);
+        if (scPlayers1.isEmpty()) {
+            return list;
+        }
+
+        Map<Long, ScPlayers> playerCollegeMap = new HashMap<>();
+        scPlayers1.forEach(x -> playerCollegeMap.put(x.getPlayerId(), x));
+        for (ScCompetitionSort competitionSort : scCompetitionSorts) {
+            CompetitionListVO competitionListVO = new CompetitionListVO();
+
+            ScPlayers scPlayersA = playerCollegeMap.get(competitionSort.getUser1());
+            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName()));
+
+            ScPlayers scPlayersB = playerCollegeMap.get(competitionSort.getUser2());
+            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getCollegeId(), competitionSort.getId(), scPlayersB.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName()));
+
+            competitionListVO.setSort(competitionSort.getSort());
+            competitionListVO.setSortId(competitionSort.getId());
+            list.add(competitionListVO);
+        }
+        return list;
     }
 
     @Override

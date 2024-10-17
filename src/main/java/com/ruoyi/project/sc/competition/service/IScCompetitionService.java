@@ -89,7 +89,7 @@ public interface IScCompetitionService {
      * @param id
      * @return
      */
-    public List<ScCompetitionSort> restoreSort(Long id);
+    public List<CompetitionListVO> restoreSort(Long id);
 
 
     /**
