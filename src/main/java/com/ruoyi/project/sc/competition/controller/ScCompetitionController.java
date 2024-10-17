@@ -246,8 +246,10 @@ public class ScCompetitionController extends BaseController {
 
     @PostMapping("/TournamentRanking")
     @ResponseBody
-    public AjaxResult TournamentRanking(Long id) {
+    public AjaxResult TournamentRanking(@Param("id") Long id, @Param("type") int type) {
         HashMap<String, List<RankVo>> stringListHashMap = new HashMap<>();
+        List<RankVo> rankList = scCompetitionService.getRankList(id, type);
+        stringListHashMap.put("TournamentRanking", rankList);
         return AjaxResult.success(stringListHashMap);
     }
 

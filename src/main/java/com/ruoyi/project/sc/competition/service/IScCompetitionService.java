@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
 import com.ruoyi.project.sc.competition.domain.CompetitionListVO;
+import com.ruoyi.project.sc.competition.domain.RankVo;
 import com.ruoyi.project.sc.competition.domain.ScCompetition;
+import com.ruoyi.project.sc.sort.domain.ScCompetitionSort;
 import com.ruoyi.project.socket.NoticeWebsocketResp;
 
 /**
@@ -87,7 +89,7 @@ public interface IScCompetitionService {
      * @param id
      * @return
      */
-    public boolean restoreSort(Long id);
+    public List<ScCompetitionSort> restoreSort(Long id);
 
 
     /**
@@ -96,7 +98,7 @@ public interface IScCompetitionService {
      * @param id
      * @return
      */
-    public List<CompetitionListVO> selectbatchCompetitionList(Long id,Long type);
+    public List<CompetitionListVO> selectbatchCompetitionList(Long id, Long type);
 
     public ScCompetition getCurrentCompetition(Long id);
 
@@ -131,4 +133,6 @@ public interface IScCompetitionService {
      * @return
      */
     public boolean judgeScore(ScCollageScore scCollageScore);
+
+    public List<RankVo> getRankList(Long id, int type);
 }

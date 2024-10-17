@@ -5,11 +5,9 @@ import java.util.*;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
 import com.ruoyi.project.sc.CollageScore.mapper.ScCollageScoreMapper;
-import com.ruoyi.project.sc.CollageScore.service.IScCollageScoreService;
 import com.ruoyi.project.sc.college.domain.ScCollege;
 import com.ruoyi.project.sc.college.mapper.ScCollegeMapper;
-import com.ruoyi.project.sc.competition.domain.CompetitionListVO;
-import com.ruoyi.project.sc.competition.domain.CompetitionUser;
+import com.ruoyi.project.sc.competition.domain.*;
 import com.ruoyi.project.sc.players.domain.ScPlayers;
 import com.ruoyi.project.sc.players.mapper.ScPlayersMapper;
 import com.ruoyi.project.sc.sort.domain.ScCompetitionSort;
@@ -24,7 +22,6 @@ import java.util.stream.Collectors;
 import com.ruoyi.common.utils.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.project.sc.competition.mapper.ScCompetitionMapper;
-import com.ruoyi.project.sc.competition.domain.ScCompetition;
 import com.ruoyi.project.sc.competition.service.IScCompetitionService;
 import com.ruoyi.common.utils.text.Convert;
 
@@ -173,7 +170,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
 
     @Transactional
     @Override
-    public boolean restoreSort(Long id) {
+    public List<ScCompetitionSort> restoreSort(Long id) {
 
         ScCompetitionSort scCompetitionSort = new ScCompetitionSort();
         scCompetitionSort.setCompetitionId(id);
@@ -197,14 +194,14 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         }
 
         ScCompetition scCompetition = scCompetitionMapper.selectScCompetitionByCompetiitonId(id);
-        scCompetition.setCurrentType(1L);
+        scCompetition.setCurrentType(0L);
         scCompetition.setCurrentSort(1L);
         scCompetitionMapper.updateScCompetition(scCompetition);
         List<ScCompetitionSort> combinations = createCombinations(scColleges, id);
         for (ScCompetitionSort combination : combinations) {
             scCompetitionSortMapper.insertScCompetitionSort(combination);
         }
-        return true;
+        return combinations;
     }
 
     @Override
@@ -318,11 +315,148 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         if (scCollageScore.getScoreId() != null || scCollageScore.getScore() == null || scCollageScore.getJudgeId() == null || scCollageScore.getPlayerId() == null) {
             throw new ServiceException("请确保传入参数的完整性");
         }
-        List<ScCollageScore> scCollageScores = scCollageScoreMapper.selectScCollageScoreList(scCollageScore);
+        ScCollageScore scCollageScore1 = new ScCollageScore();
+        scCollageScore1.setScoreId(scCollageScore.getScoreId());
+        scCollageScore1.setJudgeId(scCollageScore.getJudgeId());
+        scCollageScore1.setCollegeId(scCollageScore.getCollegeId());
+        scCollageScore1.setPlayerId(scCollageScore.getPlayerId());
+        List<ScCollageScore> scCollageScores = scCollageScoreMapper.selectScCollageScoreList(scCollageScore1);
         if (!scCollageScores.isEmpty()) {
             throw new ServiceException("您已评分");
         }
         return scCollageScoreMapper.insertScCollageScore(scCollageScore) > 0;
+    }
+
+    @Override
+    public List<RankVo> getRankList(Long id, int type) {
+        List<ScPlayers> scPlayers = scPlayersMapper.selectScPlayersList(null);
+        ScCollege scCollege = new ScCollege();
+        scCollege.setCompetitionId(id);
+        List<ScCollege> scColleges = scCollegeMapper.selectScCollegeList(scCollege);
+        List<ScCompetitionSort> scCompetitionSorts = scCompetitionSortMapper.selectScCompetitionSortList(null);
+        List<CaseScoreVO> selectCaseScore = scPlayersMapper.selectCaseScore();
+        ArrayList<RankVo> rankVos = new ArrayList<>();
+        switch (type) {
+            //一等奖
+            //二等奖
+            //三等奖
+            case 1:
+                List<CaseScoreVO> selectCollegeBasicScore = scPlayersMapper.selectBasicScore();
+                HashMap<Long, ScoreComputerVO> longScoreComputerVOHashMap = new HashMap<>();
+                // 基础能力
+                selectCollegeBasicScore.forEach((x) -> longScoreComputerVOHashMap.put(x.getId(), new ScoreComputerVO(x.getScore())));
+                // 案例分析
+
+                List<Long> caseCollect = scCompetitionSorts.stream().filter(x -> x.getType() == 1).map(ScCompetitionSort::getUser1).collect(Collectors.toList());
+                List<CaseScoreVO> caseCollectList = selectCaseScore.stream().filter(x -> caseCollect.contains(x.getId())).collect(Collectors.toList());
+                caseCollectList.forEach(x -> {
+                    ScoreComputerVO scoreComputerVO = longScoreComputerVOHashMap.get(x.getId());
+                    if (scoreComputerVO == null) {
+                        ScoreComputerVO scoreComputerVO1 = new ScoreComputerVO();
+                        scoreComputerVO1.setCaseScore(x.getScore());
+                        longScoreComputerVOHashMap.put(x.getId(), scoreComputerVO1);
+                    } else {
+                        scoreComputerVO.setCaseScore(x.getScore());
+                    }
+                });
+                // 谈心谈话
+                List<Long> talkCollect = scCompetitionSorts.stream().filter(x -> x.getType() == 3).map(ScCompetitionSort::getUser1).collect(Collectors.toList());
+                List<CaseScoreVO> talkCollectList = selectCaseScore.stream().filter(x -> talkCollect.contains(x.getId())).collect(Collectors.toList());
+                talkCollectList.forEach(x -> {
+                    ScoreComputerVO scoreComputerVO = longScoreComputerVOHashMap.get(x.getId());
+                    if (scoreComputerVO == null) {
+                        ScoreComputerVO scoreComputerVO1 = new ScoreComputerVO();
+                        scoreComputerVO1.setTalkScore(x.getScore());
+                        longScoreComputerVOHashMap.put(x.getId(), scoreComputerVO1);
+                    } else {
+                        scoreComputerVO.setTalkScore(x.getScore());
+                    }
+                });
+                List<RankVo> rankVosInner = new ArrayList<RankVo>();
+                longScoreComputerVOHashMap.forEach((x, y) -> {
+                    RankVo rankVo = new RankVo();
+                    rankVo.setCollegeId(x);
+                    rankVo.setUser(scColleges.stream().filter(z -> z.getCollegeId().equals(x)).findFirst().get().getName());
+                    rankVo.setScore(Float.valueOf(String.format("%.2f",(y.getBasicScore() * 0.3 + y.getCaseScore() * 0.4 + y.getTalkScore() * 0.3))));
+
+                    rankVosInner.add(rankVo);
+                });
+
+                rankVosInner.sort(Comparator.comparing(RankVo::getScore).reversed());
+                for (int i = 0; i < rankVosInner.size(); i++) {
+                    RankVo rankVo = rankVosInner.get(i);
+                    rankVo.setSort(i + 1);
+                    if (rankVo.getSort() == 1) {
+                        rankVo.setName("一等奖");
+                        rankVos.add(rankVo);
+                    } else if (rankVo.getSort() > 1 && rankVo.getSort() <= 3) {
+                        rankVo.setName("二等奖");
+                        rankVos.add(rankVo);
+                    } else if (rankVo.getSort() > 3 && rankVo.getSort() <= 8) {
+                        rankVo.setName("三等奖");
+                        rankVos.add(rankVo);
+                    }
+                }
+
+                break;
+            case 4:
+
+                //基础能力奖10
+                List<ScPlayers> limit = scPlayers.stream().sorted(Comparator.comparing(ScPlayers::getBasicScore).reversed()).limit(10).collect(Collectors.toList());
+                for (int i = 0; i < limit.size(); i++) {
+                    ScPlayers x = limit.get(i);
+                    RankVo rankVo = new RankVo();
+                    rankVo.setCollegeId(x.getCollegeId());
+                    rankVo.setName(scColleges.stream().filter(z -> z.getCollegeId().equals(x.getCollegeId())).findFirst().get().getName());
+                    rankVo.setScore(Float.valueOf(x.getBasicScore()));
+                    rankVo.setSort(i + 1);
+                    rankVo.setUser(x.getName());
+                    rankVos.add(rankVo);
+                }
+
+
+                break;
+            //案例研讨奖A B组共6个
+            case 5:
+                List<CaseScoreVO> caseScoreVOS = scPlayersMapper.selectUserCaseScore();
+                List<Long> collectA = scPlayers.stream().filter(x -> x.getType() == 1).map(ScPlayers::getPlayerId).collect(Collectors.toList());
+                List<Long> collectB = scPlayers.stream().filter(x -> x.getType() == 2).map(ScPlayers::getPlayerId).collect(Collectors.toList());
+                int acount = 0;
+                int bcount = 0;
+                List<CaseScoreVO> collect = caseScoreVOS.stream().sorted(Comparator.comparing(CaseScoreVO::getScore).reversed()).collect(Collectors.toList());
+                for (CaseScoreVO caseScoreVO : collect) {
+
+                    ScPlayers scPlayersUser = scPlayers.stream().filter(x -> x.getPlayerId().equals(caseScoreVO.getId())).findFirst().get();
+                    if (collectA.contains(caseScoreVO.getId())) {
+                        if (acount >= 3) {
+                            continue;
+                        }
+                        RankVo rankVo = new RankVo();
+                        rankVo.setUser(scPlayersUser.getName());
+                        rankVo.setName(scColleges.stream().filter(z -> z.getCollegeId().equals(scPlayersUser.getCollegeId())).findFirst().get().getName());
+                        rankVo.setSort(acount+1);
+                        rankVo.setScore(caseScoreVO.getScore());
+                        rankVos.add(rankVo);
+                        acount++;
+
+                    } else if (collectB.contains(caseScoreVO.getId())) {
+                        if (bcount >=3) {
+                            continue;
+                        }
+                        RankVo rankVo = new RankVo();
+                        rankVo.setUser(scPlayersUser.getName());
+                        rankVo.setName(scColleges.stream().filter(z -> z.getCollegeId().equals(scPlayersUser.getCollegeId())).findFirst().get().getName());
+                        rankVo.setSort(bcount+1);
+                        rankVo.setScore(caseScoreVO.getScore());
+                        rankVos.add(rankVo);
+                        bcount++;
+
+                    }
+                }
+
+                break;
+        }
+        return rankVos;
     }
 
     /**

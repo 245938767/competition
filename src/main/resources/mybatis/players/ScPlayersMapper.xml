@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.project.sc.players.mapper.ScPlayersMapper">
-    
+
     <resultMap type="ScPlayers" id="ScPlayersResult">
-        <result property="playerId"    column="player_id"    />
-        <result property="name"    column="name"    />
-        <result property="collegeId"    column="college_id"    />
-        <result property="type"    column="type"    />
-        <result property="basicScore"    column="basic_score"    />
+        <result property="playerId" column="player_id"/>
+        <result property="name" column="name"/>
+        <result property="collegeId" column="college_id"/>
+        <result property="type" column="type"/>
+        <result property="basicScore" column="basic_score"/>
 
         <collection property="scColleges" ofType="ScCollege" column="college_id" select="selectScCollegeByCollegeId"/>
     </resultMap>
@@ -21,8 +21,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="sort" column="sort"/>
     </resultMap>
 
+    <resultMap id="CaseScoreResult" type="CaseScoreVO">
+        <result property="id" column="id"/>
+        <result property="score" column="score"/>
+        <result property="counts" column="counts"/>
+
+    </resultMap>
+
     <sql id="selectScPlayersVo">
-        select player_id, name, college_id, type, basic_score from sc_players
+        select player_id, name, college_id, type, basic_score
+        from sc_players
     </sql>
     <select id="selectScCollegeByCollegeId" parameterType="Long" resultMap="ScCollegeResult">
         select college_id, name, competition_id, sort
@@ -31,14 +39,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
     <select id="selectScPlayersList" parameterType="ScPlayers" resultMap="ScPlayersResult">
         <include refid="selectScPlayersVo"/>
-        <where>  
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="collegeId != null "> and college_id = #{collegeId}</if>
-            <if test="type != null "> and type = #{type}</if>
-            <if test="basicScore != null "> and basic_score = #{basicScore}</if>
+        <where>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="collegeId != null ">and college_id = #{collegeId}</if>
+            <if test="type != null ">and type = #{type}</if>
+            <if test="basicScore != null ">and basic_score = #{basicScore}</if>
         </where>
     </select>
-    
+
     <select id="selectScPlayersByPlayerId" parameterType="Long" resultMap="ScPlayersResult">
         <include refid="selectScPlayersVo"/>
         where player_id = #{playerId}
@@ -51,13 +59,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="collegeId != null">college_id,</if>
             <if test="type != null">type,</if>
             <if test="basicScore != null">basic_score,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="collegeId != null">#{collegeId},</if>
             <if test="type != null">#{type},</if>
             <if test="basicScore != null">#{basicScore},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateScPlayers" parameterType="ScPlayers">
@@ -72,14 +80,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteScPlayersByPlayerId" parameterType="Long">
-        delete from sc_players where player_id = #{playerId}
+        delete
+        from sc_players
+        where player_id = #{playerId}
     </delete>
 
     <delete id="deleteScPlayersByPlayerIds" parameterType="String">
-        delete from sc_players where player_id in 
+        delete from sc_players where player_id in
         <foreach item="playerId" collection="array" open="(" separator="," close=")">
             #{playerId}
         </foreach>
     </delete>
 
+    <select id="selectBasicScore" resultMap="CaseScoreResult">
+        SELECT college_id as id, ROUND(AVG(basic_score),2) as score
+        FROM sc_players
+        WHERE basic_score > 0
+        GROUP BY college_id
+    </select>
+
+    <select id="selectCaseScore" resultMap="CaseScoreResult">
+        SELECT college_id as id, ROUND(AVG(avgScore),2) as score
+        FROM sc_collage_score scs
+
+                 inner join (SELECT player_id                                                 as id,
+                                    (SUM(score) - MAX(score) - MIN(score)) / count(player_id) AS avgScore
+                             FROM sc_collage_score
+                             GROUP BY player_id) as scorem on scorem.id = scs.player_id
+        GROUP BY college_id;
+    </select>
+    <select id="selectUserCaseScore" resultMap="CaseScoreResult">
+        SELECT player_id                                                 as id,
+               ROUND ( (SUM(score) - MAX(score) - MIN(score)) / count(player_id),2) AS score
+        FROM sc_collage_score
+        GROUP BY player_id
+    </select>
 </mapper>
