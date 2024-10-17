@@ -400,7 +400,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                     RankVo rankVo = new RankVo();
                     rankVo.setCollegeId(x);
                     rankVo.setUser(scColleges.stream().filter(z -> z.getCollegeId().equals(x)).findFirst().get().getName());
-                    rankVo.setScore(Float.valueOf(String.format("%.2f",(y.getBasicScore() * 0.3 + y.getCaseScore() * 0.4 + y.getTalkScore() * 0.3))));
+                    rankVo.setScore(Float.valueOf(String.format("%.2f", (y.getBasicScore() * 0.3 + y.getCaseScore() * 0.4 + y.getTalkScore() * 0.3))));
 
                     rankVosInner.add(rankVo);
                 });
@@ -457,24 +457,42 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                         RankVo rankVo = new RankVo();
                         rankVo.setUser(scPlayersUser.getName());
                         rankVo.setName(scColleges.stream().filter(z -> z.getCollegeId().equals(scPlayersUser.getCollegeId())).findFirst().get().getName());
-                        rankVo.setSort(acount+1);
+                        rankVo.setSort(acount + 1);
                         rankVo.setScore(caseScoreVO.getScore());
                         rankVos.add(rankVo);
                         acount++;
 
                     } else if (collectB.contains(caseScoreVO.getId())) {
-                        if (bcount >=3) {
+                        if (bcount >= 3) {
                             continue;
                         }
                         RankVo rankVo = new RankVo();
                         rankVo.setUser(scPlayersUser.getName());
                         rankVo.setName(scColleges.stream().filter(z -> z.getCollegeId().equals(scPlayersUser.getCollegeId())).findFirst().get().getName());
-                        rankVo.setSort(bcount+1);
+                        rankVo.setSort(bcount + 1);
                         rankVo.setScore(caseScoreVO.getScore());
                         rankVos.add(rankVo);
                         bcount++;
 
                     }
+                }
+
+                break;
+            //谈心谈话3个
+            case 6:
+
+                List<CaseScoreVO> talkScoreVO = scPlayersMapper.selectUserCaseScore();
+                List<Long> collectTalk = scPlayers.stream().filter(x -> x.getType() == 3).map(ScPlayers::getPlayerId).collect(Collectors.toList());
+                List<CaseScoreVO> collect1 = talkScoreVO.stream().filter(x -> collectTalk.contains(x.getId())).sorted(Comparator.comparing(CaseScoreVO::getScore).reversed()).limit(3).collect(Collectors.toList());
+                int count = 1;
+                for (CaseScoreVO caseScoreVO : collect1) {
+                    ScPlayers scPlayersUser = scPlayers.stream().filter(x -> x.getPlayerId().equals(caseScoreVO.getId())).findFirst().get();
+                    RankVo rankVo = new RankVo();
+                    rankVo.setUser(scPlayersUser.getName());
+                    rankVo.setName(scColleges.stream().filter(z -> z.getCollegeId().equals(scPlayersUser.getCollegeId())).findFirst().get().getName());
+                    rankVo.setSort(count++);
+                    rankVo.setScore(caseScoreVO.getScore());
+                    rankVos.add(rankVo);
                 }
 
                 break;
