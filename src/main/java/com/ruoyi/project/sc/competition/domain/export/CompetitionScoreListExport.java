@@ -1,19 +1,24 @@
-package com.ruoyi.project.sc.competition.domain;
+package com.ruoyi.project.sc.competition.domain.export;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.ruoyi.framework.aspectj.lang.annotation.Excel;
 
 import java.util.List;
 
 public class CompetitionScoreListExport {
 
-    @Excel(name = "序号")
+    @Excel(name = "序号", needMerge = true)
+    @ExcelProperty(value = "序号", index = 0)
     private Long sort;
-    @Excel(name = "学院")
+    @Excel(name = "学院", needMerge = true)
+    @ExcelProperty(value = "学院", index = 1)
     private String college;
     private List<CompetitionUserScoreExport> userScore;
-    @Excel(name = "团体总分")
+    @Excel(name = "团体总分", needMerge = true)
+    @ExcelProperty(value = "团体总分", index = 2)
     private Float total;
-    @Excel(name = "团体排名")
+    @Excel(name = "团体排名", needMerge = true)
+    @ExcelProperty(value = "团体排名", index = 3)
     private Long rank;
 
     public Long getSort() {

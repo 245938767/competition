@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.alibaba.excel.EasyExcel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -281,6 +283,31 @@ public class ExcelUtil<T>
             }
             rownum++;
         }
+    }
+
+    /**
+     * 对excel表单默认第一个索引名转换成list（EasyExcel）
+     *
+     * @param is 输入流
+     * @return 转换后集合
+     */
+    public List<T> importEasyExcel(InputStream is) throws Exception
+    {
+        return EasyExcel.read(is).head(clazz).sheet().doReadSync();
+    }
+
+    /**
+     * 对list数据源将其里面的数据导入到excel表单（EasyExcel）
+     *
+     * @param list 导出数据集合
+     * @param sheetName 工作表的名称
+     * @return 结果
+     */
+    public AjaxResult exportEasyExcel(List<T> list, String sheetName)
+    {
+        String filename = encodingFilename(sheetName);
+        EasyExcel.write(getAbsoluteFile(filename), clazz).sheet(sheetName).doWrite(list);
+        return AjaxResult.success(filename);
     }
 
     /**
@@ -1396,7 +1423,7 @@ public class ExcelUtil<T>
     /**
      * 编码文件名
      */
-    public String encodingFilename(String filename)
+    public static String encodingFilename(String filename)
     {
         filename = UUID.randomUUID() + "_" + filename + ".xlsx";
         return filename;
@@ -1407,7 +1434,7 @@ public class ExcelUtil<T>
      * 
      * @param filename 文件名称
      */
-    public String getAbsoluteFile(String filename)
+    public static String getAbsoluteFile(String filename)
     {
         String downloadPath = RuoYiConfig.getDownloadPath() + filename;
         File desc = new File(downloadPath);

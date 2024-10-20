@@ -1,4 +1,4 @@
-package com.ruoyi.project.sc.competition.domain;
+package com.ruoyi.project.sc.competition.domain.export;
 
 import com.ruoyi.framework.aspectj.lang.annotation.Excel;
 

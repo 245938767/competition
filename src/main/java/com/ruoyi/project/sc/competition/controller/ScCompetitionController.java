@@ -1,12 +1,21 @@
 package com.ruoyi.project.sc.competition.controller;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.write.metadata.WriteSheet;
+import com.ruoyi.framework.interceptor.annotation.RepeatSubmit;
 import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
-import com.ruoyi.project.sc.competition.domain.CompetitionListVO;
-import com.ruoyi.project.sc.competition.domain.RankVo;
+import com.ruoyi.project.sc.competition.domain.*;
+import com.ruoyi.project.sc.competition.domain.export.CompetitionCaseListExport;
+import com.ruoyi.project.sc.competition.domain.export.CompetitionTalkListExport;
+import com.ruoyi.project.sc.competition.domain.export.UserListExport;
 import com.ruoyi.project.socket.CompetitionWebSocket;
 import com.ruoyi.project.socket.NoticeWebsocketResp;
 import org.apache.ibatis.annotations.Param;
@@ -17,12 +26,13 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
-import com.ruoyi.project.sc.competition.domain.ScCompetition;
 import com.ruoyi.project.sc.competition.service.IScCompetitionService;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.page.TableDataInfo;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * competitionController
@@ -181,7 +191,9 @@ public class ScCompetitionController extends BaseController {
     @PostMapping("/reloadSort/{id}")
     @ResponseBody
     public AjaxResult reloadSort(@PathVariable Long id) {
-        return AjaxResult.success(scCompetitionService.restoreSort(id));
+        List<CompetitionListVO> competitionListVOS = scCompetitionService.restoreSort(id);
+        competitionWebSocket.sendMessage();
+        return AjaxResult.success(competitionListVOS);
     }
 
     @PostMapping("/selectCompetitionVOList/{id}")
@@ -235,6 +247,7 @@ public class ScCompetitionController extends BaseController {
      */
     @PostMapping("/judgeScore")
     @ResponseBody
+    @RepeatSubmit
     public AjaxResult judgeScore(@RequestBody ScCollageScore scCollageScore) {
 
         if (scCompetitionService.judgeScore(scCollageScore)) {
@@ -251,6 +264,60 @@ public class ScCompetitionController extends BaseController {
         List<RankVo> rankList = scCompetitionService.getRankList(id, type);
         stringListHashMap.put("TournamentRanking", rankList);
         return AjaxResult.success(stringListHashMap);
+    }
+
+    /**
+     * 导出比赛名单
+     */
+    @Log(title = "competitionExport", businessType = BusinessType.EXPORT)
+    @PostMapping("/competitionExport")
+    @ResponseBody
+    public AjaxResult competitionExport(HttpServletResponse response, @Param("id") Long id) throws IOException {
+
+        List<CompetitionListVO> competitionListVOS = scCompetitionService.selectbatchCompetitionList(id, 1L);
+        ArrayList<CompetitionCaseListExport> competitionCaseListExports = new ArrayList<>();
+        for (CompetitionListVO competitionListVO : competitionListVOS) {
+            CompetitionCaseListExport competitionCaseListExport = getCompetitionListExport(competitionListVO);
+            competitionCaseListExports.add(competitionCaseListExport);
+        }
+
+        List<CompetitionListVO> competitionListVOStalk = scCompetitionService.selectbatchCompetitionList(id, 3L);
+        ArrayList<CompetitionTalkListExport> competitionTalkListExports = new ArrayList<>();
+        for (CompetitionListVO competitionListVO : competitionListVOStalk) {
+            CompetitionTalkListExport competitionTalkListExport = new CompetitionTalkListExport();
+            competitionTalkListExport.setSort(competitionListVO.getSort());
+            competitionTalkListExport.setCollegeA(competitionListVO.getUserA().getCollage());
+            competitionTalkListExport.setUserAExports(competitionListVO.getUserA().getName());
+            competitionTalkListExports.add(competitionTalkListExport);
+        }
+        ExcelUtil<CompetitionTalkListExport> talk = new ExcelUtil<CompetitionTalkListExport>(CompetitionTalkListExport.class);
+
+        AjaxResult ajaxResult1 = talk.exportExcel(competitionTalkListExports, "心谈话名单", "厦门理工学院首届辅导员素质能力大赛比赛名单");
+        ExcelUtil<CompetitionCaseListExport> util = new ExcelUtil<CompetitionCaseListExport>(CompetitionCaseListExport.class);
+        HashMap<String, String> stringStringHashMap = new HashMap<>();
+
+
+        AjaxResult ajaxResult = util.exportExcel(competitionCaseListExports, "案例分析名单", "厦门理工学院首届辅导员素质能力大赛比赛名单");
+        stringStringHashMap.put("talk", ajaxResult1.get("msg").toString());
+        stringStringHashMap.put("case", ajaxResult.get("msg").toString());
+        return AjaxResult.success(stringStringHashMap);
+
+    }
+
+    private static CompetitionCaseListExport getCompetitionListExport(CompetitionListVO competitionListVO) {
+        CompetitionCaseListExport competitionCaseListExport = new CompetitionCaseListExport();
+        competitionCaseListExport.setSort(competitionListVO.getSort());
+        UserListExport userListExport = new UserListExport();
+        userListExport.setUserExports(competitionListVO.getUserA().getName());
+        userListExport.setCollege(competitionListVO.getUserA().getCollage());
+        UserListExport userListExportb = new UserListExport();
+        userListExportb.setUserExports(competitionListVO.getUserB().getName());
+        userListExportb.setCollege(competitionListVO.getUserB().getCollage());
+        ArrayList<UserListExport> userListExports = new ArrayList<>();
+        userListExports.add(userListExport);
+        userListExports.add(userListExportb);
+        competitionCaseListExport.setUserListExportList(userListExports);
+        return competitionCaseListExport;
     }
 
 }
