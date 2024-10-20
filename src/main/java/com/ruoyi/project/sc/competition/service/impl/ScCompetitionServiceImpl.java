@@ -215,10 +215,10 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
             CompetitionListVO competitionListVO = new CompetitionListVO();
 
             ScPlayers scPlayersA = playerCollegeMap.get(competitionSort.getUser1());
-            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName()));
+            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName(), scPlayersA.getType()));
 
             ScPlayers scPlayersB = playerCollegeMap.get(competitionSort.getUser2());
-            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getCollegeId(), competitionSort.getId(), scPlayersB.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName()));
+            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getCollegeId(), competitionSort.getId(), scPlayersB.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName(),scPlayersB.getType()));
 
             competitionListVO.setSort(competitionSort.getSort());
             competitionListVO.setSortId(competitionSort.getId());
@@ -251,10 +251,10 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
             CompetitionListVO competitionListVO = new CompetitionListVO();
 
             ScPlayers scPlayersA = playerCollegeMap.get(competitionSort.getUser1());
-            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName()));
+            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName(),scPlayersA.getType()));
 
             ScPlayers scPlayersB = playerCollegeMap.get(competitionSort.getUser2());
-            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getCollegeId(), competitionSort.getId(), scPlayersB.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName()));
+            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getCollegeId(), competitionSort.getId(), scPlayersB.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName(),scPlayersB.getType()));
 
             competitionListVO.setSort(competitionSort.getSort());
             competitionListVO.setSortId(competitionSort.getId());

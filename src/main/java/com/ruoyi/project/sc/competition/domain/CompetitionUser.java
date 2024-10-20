@@ -18,12 +18,13 @@ public class CompetitionUser implements Serializable {
         this.collage = collage;
     }
 
-    public CompetitionUser(Long collageId, Long sortId, Long playerId, String name, String collage) {
+    public CompetitionUser(Long collageId, Long sortId, Long playerId, String name, String collage,Long type) {
         this.collageId = collageId;
         SortId = sortId;
         this.playerId = playerId;
         this.name = name;
         this.collage = collage;
+        this.type=type;
     }
 
     public CompetitionUser(List<ScCollageScore> scCollageScores, String name, String collage) {
@@ -38,6 +39,15 @@ public class CompetitionUser implements Serializable {
     private List<ScCollageScore> scCollageScores;
     private String name;
     private String collage;
+    private Long type;
+
+    public Long getType() {
+        return type;
+    }
+
+    public void setType(Long type) {
+        this.type = type;
+    }
 
     public Long getCollageId() {
         return collageId;
