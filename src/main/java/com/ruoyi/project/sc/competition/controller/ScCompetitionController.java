@@ -1,15 +1,15 @@
 package com.ruoyi.project.sc.competition.controller;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.ruoyi.common.utils.file.FileUtils;
+import com.ruoyi.common.utils.uuid.UUID;
 import com.ruoyi.framework.interceptor.annotation.RepeatSubmit;
 import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
 import com.ruoyi.project.sc.competition.domain.*;
@@ -21,6 +21,7 @@ import com.ruoyi.project.socket.NoticeWebsocketResp;
 import org.apache.ibatis.annotations.Param;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,8 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.page.TableDataInfo;
 
 import javax.servlet.http.HttpServletResponse;
+
+import static org.springframework.util.StreamUtils.BUFFER_SIZE;
 
 /**
  * competitionController
@@ -292,14 +295,22 @@ public class ScCompetitionController extends BaseController {
         }
         ExcelUtil<CompetitionTalkListExport> talk = new ExcelUtil<CompetitionTalkListExport>(CompetitionTalkListExport.class);
 
-        AjaxResult ajaxResult1 = talk.exportExcel(competitionTalkListExports, "心谈话名单", "厦门理工学院首届辅导员素质能力大赛比赛名单");
+        AjaxResult ajaxResult1 = talk.exportExcel(competitionTalkListExports, "谈心谈话名单", "厦门理工学院首届辅导员素质能力大赛比赛名单");
         ExcelUtil<CompetitionCaseListExport> util = new ExcelUtil<CompetitionCaseListExport>(CompetitionCaseListExport.class);
         HashMap<String, String> stringStringHashMap = new HashMap<>();
-
-
         AjaxResult ajaxResult = util.exportExcel(competitionCaseListExports, "案例分析名单", "厦门理工学院首届辅导员素质能力大赛比赛名单");
-        stringStringHashMap.put("talk", ajaxResult1.get("msg").toString());
-        stringStringHashMap.put("case", ajaxResult.get("msg").toString());
+        String casePath = ExcelUtil.getAbsoluteFile(ajaxResult.get("msg").toString());
+        String talkPath = ExcelUtil.getAbsoluteFile(ajaxResult1.get("msg").toString());
+        List<File> fileList = new ArrayList<>();
+        fileList.add(new File(casePath));
+        fileList.add(new File(talkPath));
+        String absoluteFile = ExcelUtil.getAbsoluteFile(UUID.fastUUID() + "厦门理工学院首届辅导员素质能力大赛比赛名单.zip");
+        FileOutputStream fos2 = new FileOutputStream(new File(absoluteFile));
+        toZip(fileList, fos2);
+
+        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        FileUtils.setAttachmentResponseHeader(response, "厦门理工学院首届辅导员素质能力大赛比赛名单");
+        FileUtils.writeBytes(absoluteFile, response.getOutputStream());
         return AjaxResult.success(stringStringHashMap);
 
     }
@@ -318,6 +329,37 @@ public class ScCompetitionController extends BaseController {
         userListExports.add(userListExportb);
         competitionCaseListExport.setUserListExportList(userListExports);
         return competitionCaseListExport;
+    }
+
+    public static void toZip(List<File> srcFiles, OutputStream out) throws RuntimeException {
+        long start = System.currentTimeMillis();
+        ZipOutputStream zos = null;
+        try {
+            zos = new ZipOutputStream(out);
+            for (File srcFile : srcFiles) {
+                byte[] buf = new byte[BUFFER_SIZE];
+                zos.putNextEntry(new ZipEntry(srcFile.getName()));
+                int len;
+                FileInputStream in = new FileInputStream(srcFile);
+                while ((len = in.read(buf)) != -1) {
+                    zos.write(buf, 0, len);
+                }
+                zos.closeEntry();
+                in.close();
+            }
+            long end = System.currentTimeMillis();
+            System.out.println("压缩完成，耗时：" + (end - start) + " ms");
+        } catch (Exception e) {
+            throw new RuntimeException("zip error from ZipUtils", e);
+        } finally {
+            if (zos != null) {
+                try {
+                    zos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }
