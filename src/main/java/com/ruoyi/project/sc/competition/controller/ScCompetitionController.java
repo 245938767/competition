@@ -220,7 +220,7 @@ public class ScCompetitionController extends BaseController {
     @ResponseBody
     public AjaxResult lastPlayer(@PathVariable Long id) {
 
-        if (scCompetitionService.nextPlayer(id)) {
+        if (scCompetitionService.lastPlayer(id)) {
             competitionWebSocket.sendMessage();
             return AjaxResult.success();
         }
