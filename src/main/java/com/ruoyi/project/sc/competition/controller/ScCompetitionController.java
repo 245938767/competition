@@ -16,6 +16,8 @@ import com.ruoyi.project.sc.competition.domain.*;
 import com.ruoyi.project.sc.competition.domain.export.CompetitionCaseListExport;
 import com.ruoyi.project.sc.competition.domain.export.CompetitionTalkListExport;
 import com.ruoyi.project.sc.competition.domain.export.UserListExport;
+import com.ruoyi.project.sc.players.domain.ScPlayers;
+import com.ruoyi.project.sc.sort.domain.ScCompetitionSort;
 import com.ruoyi.project.socket.CompetitionWebSocket;
 import com.ruoyi.project.socket.NoticeWebsocketResp;
 import org.apache.ibatis.annotations.Param;
@@ -190,12 +192,21 @@ public class ScCompetitionController extends BaseController {
         return AjaxResult.error();
     }
 
+
     @Log(title = "competition", businessType = BusinessType.OTHER)
     @PostMapping("/reloadSort/{id}")
     @ResponseBody
     public AjaxResult reloadSort(@PathVariable Long id) {
         List<CompetitionListVO> competitionListVOS = scCompetitionService.restoreSort(id);
         competitionWebSocket.sendMessage();
+        return AjaxResult.success(competitionListVOS);
+    }
+    @Log(title = "competition", businessType = BusinessType.OTHER)
+    @PostMapping("/reloadSortList")
+    @ResponseBody
+    public AjaxResult reloadSortList(@Param("id") Long id,@Param("type") Long type) {
+
+        List<CompetitionListVO> competitionListVOS = scCompetitionService.selectbatchCompetitionList(id, type);
         return AjaxResult.success(competitionListVOS);
     }
 
