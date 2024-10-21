@@ -320,7 +320,7 @@ public class ScCompetitionController extends BaseController {
         toZip(fileList, fos2);
 
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        FileUtils.setAttachmentResponseHeader(response, "厦门理工学院首届辅导员素质能力大赛比赛名单");
+        FileUtils.setAttachmentResponseHeader(response, "厦门理工学院首届辅导员素质能力大赛比赛名单.zip");
         FileUtils.writeBytes(absoluteFile, response.getOutputStream());
         return AjaxResult.success(stringStringHashMap);
 
