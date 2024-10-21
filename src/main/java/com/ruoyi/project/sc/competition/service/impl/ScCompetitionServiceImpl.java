@@ -364,6 +364,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
             //二等奖
             //三等奖
             case 1:
+
                 List<RankVo> rankVosInner = getTotalRanking(scColleges);
                 rankVosInner.sort(Comparator.comparing(RankVo::getScore).reversed());
                 for (int i = 0; i < rankVosInner.size(); i++) {
@@ -611,8 +612,9 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         if (!collegeNameA.equals(collegeNameB)) {
             return true;
         }
+        return false;
         // 同一学院的玩家，必须来自不同队伍才能匹配
-        return !Objects.equals(playerA.getType(), playerB.getType());
+//        return !Objects.equals(playerA.getType(), playerB.getType());
     }
 
     private static String extractCollegeName(String fullName) {
