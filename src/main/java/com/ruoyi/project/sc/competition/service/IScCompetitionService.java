@@ -135,4 +135,6 @@ public interface IScCompetitionService {
     public boolean judgeScore(ScCollageScore scCollageScore);
 
     public List<RankVo> getRankList(Long id, int type);
+
+    public String competitionRankExport(Long id);
 }
