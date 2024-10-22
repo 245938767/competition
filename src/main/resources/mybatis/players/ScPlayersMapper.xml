@@ -104,14 +104,14 @@
         FROM sc_collage_score scs
 
                  inner join (SELECT player_id                                                 as id,
-                                    (SUM(score) - MAX(score) - MIN(score)) / count(player_id) AS avgScore
+                                    (SUM(score) - MAX(score) - MIN(score)) / (count(player_id)-2) AS avgScore
                              FROM sc_collage_score
                              GROUP BY player_id) as scorem on scorem.id = scs.player_id
         GROUP BY college_id;
     </select>
     <select id="selectUserCaseScore" resultMap="CaseScoreResult">
         SELECT player_id                                                 as id,
-               ROUND ( (SUM(score) - MAX(score) - MIN(score)) / count(player_id),2) AS score
+               ROUND ( (SUM(score) - MAX(score) - MIN(score)) / (count(player_id)-2),2) AS score
         FROM sc_collage_score
         GROUP BY player_id
     </select>

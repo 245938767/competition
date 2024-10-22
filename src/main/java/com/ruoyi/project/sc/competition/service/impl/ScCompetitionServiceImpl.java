@@ -3,11 +3,16 @@ package com.ruoyi.project.sc.competition.service.impl;
 import java.util.*;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
 import com.ruoyi.project.sc.CollageScore.mapper.ScCollageScoreMapper;
 import com.ruoyi.project.sc.college.domain.ScCollege;
 import com.ruoyi.project.sc.college.mapper.ScCollegeMapper;
 import com.ruoyi.project.sc.competition.domain.*;
+import com.ruoyi.project.sc.competition.domain.export.CompetitionCaseListExport;
+import com.ruoyi.project.sc.competition.domain.export.CompetitionScoreListExport;
+import com.ruoyi.project.sc.competition.domain.export.CompetitionUserScoreExport;
 import com.ruoyi.project.sc.players.domain.ScPlayers;
 import com.ruoyi.project.sc.players.mapper.ScPlayersMapper;
 import com.ruoyi.project.sc.sort.domain.ScCompetitionSort;
@@ -366,7 +371,6 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
             case 1:
 
                 List<RankVo> rankVosInner = getTotalRanking(scColleges);
-                rankVosInner.sort(Comparator.comparing(RankVo::getScore).reversed());
                 for (int i = 0; i < rankVosInner.size(); i++) {
                     RankVo rankVo = rankVosInner.get(i);
                     rankVo.setSort(i + 1);
@@ -504,13 +508,87 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
 
             rankVosInner.add(rankVo);
         });
+
+        rankVosInner.sort(Comparator.comparing(RankVo::getScore).reversed());
+        for (int i = 0; i < rankVosInner.size(); i++) {
+            rankVosInner.get(i).setSort(i + 1);
+        }
         return rankVosInner;
     }
 
     @Override
     public String competitionRankExport(Long id) {
+        ScCollege scCollege = new ScCollege();
+        scCollege.setCompetitionId(id);
+        List<ScCollege> scColleges = scCollegeMapper.selectScCollegeList(scCollege);
+        List<ScPlayers> scPlayers = scPlayersMapper.selectScPlayersList(null);
+        List<Long> collectA = scPlayers.stream().filter(x -> x.getType() <= 2).map(ScPlayers::getPlayerId).collect(Collectors.toList());
+        List<Long> collectB = scPlayers.stream().filter(x -> x.getType() == 3).map(ScPlayers::getPlayerId).collect(Collectors.toList());
+        HashMap<Long, RankVo> caseUserMap = new HashMap<>();
+        HashMap<Long, RankVo> talkUserMap = new HashMap<>();
+        List<CaseScoreVO> caseScoreVOS = scPlayersMapper.selectUserCaseScore();
+        List<CaseScoreVO> caseColloge = caseScoreVOS.stream().sorted(Comparator.comparing(CaseScoreVO::getScore).reversed()).collect(Collectors.toList());
+        int ac = 1;
+        int bc = 1;
+        for (int i = 0; i < caseColloge.size(); i++) {
+            CaseScoreVO caseScoreVO = caseColloge.get(i);
+            RankVo rankVo = new RankVo();
+            rankVo.setScore(caseScoreVO.getScore());
+            if (collectA.contains(caseScoreVO.getId())) {
+                rankVo.setSort(ac++);
+                caseUserMap.put(caseScoreVO.getId(), rankVo);
+            } else if (collectB.contains(caseScoreVO.getId())) {
+                rankVo.setSort(bc++);
+                talkUserMap.put(caseScoreVO.getId(), rankVo);
+            }
+        }
+        List<RankVo> totalRanking = getTotalRanking(scColleges);
+        ArrayList<CompetitionScoreListExport> competitionScoreListExports = new ArrayList<>();
+        for (RankVo rankVo : totalRanking) {
+            CompetitionScoreListExport competitionScoreListExport = new CompetitionScoreListExport();
+            competitionScoreListExport.setRank((long) rankVo.getSort());
+            competitionScoreListExport.setTotal(rankVo.getScore());
+            competitionScoreListExport.setCollege(scColleges.stream().filter(x -> Objects.equals(x.getCollegeId(), rankVo.getCollegeId())).findFirst().get().getName());
+            List<CompetitionUserScoreExport> competitionUserScoreExports = new ArrayList<>();
+            //基础能力奖10
+            List<ScPlayers> collect = scPlayers.stream().filter(x -> Objects.equals(x.getCollegeId(), rankVo.getCollegeId())).sorted(Comparator.comparing(ScPlayers::getType).reversed()).collect(Collectors.toList());
+            for (ScPlayers players : collect) {
+                CompetitionUserScoreExport competitionUserScoreExport = new CompetitionUserScoreExport();
+                competitionUserScoreExport.setBasicScore(Float.valueOf(players.getBasicScore()));
+                competitionUserScoreExport.setName(players.getName());
 
-        return null;
+//                competitionUserScoreExport.setTalkScore(0F);
+//                competitionUserScoreExport.setTalkRank(0L);
+//                competitionUserScoreExport.setCaseScore(0F);
+//                competitionUserScoreExport.setCaseRank(0L);
+                //case
+                RankVo casescore = caseUserMap.get(players.getPlayerId());
+                if (casescore != null) {
+
+                    competitionUserScoreExport.setCaseScore(casescore.getScore());
+                    competitionUserScoreExport.setCaseRank((long) casescore.getSort());
+                    competitionUserScoreExports.add(competitionUserScoreExport);
+                    continue;
+                }
+                // talk
+                RankVo talkcase = talkUserMap.get(players.getPlayerId());
+                if (talkcase != null) {
+
+                    competitionUserScoreExport.setTalkScore(talkcase.getScore());
+                    competitionUserScoreExport.setTalkRank((long) talkcase.getSort());
+                    continue;
+                }
+
+
+            }
+            competitionScoreListExport.setUserScore(competitionUserScoreExports);
+            competitionScoreListExports.add(competitionScoreListExport);
+        }
+
+        ExcelUtil<CompetitionScoreListExport> util = new ExcelUtil<CompetitionScoreListExport>(CompetitionScoreListExport.class);
+        AjaxResult ajaxResult = util.exportExcel(competitionScoreListExports, "分数明细和排名", "厦门理工学院首届辅导员素质能力大赛各项分数明细和排名");
+        String casePath = ExcelUtil.getAbsoluteFile(ajaxResult.get("msg").toString());
+        return casePath;
     }
 
     /**

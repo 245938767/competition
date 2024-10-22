@@ -201,10 +201,11 @@ public class ScCompetitionController extends BaseController {
         competitionWebSocket.sendMessage();
         return AjaxResult.success(competitionListVOS);
     }
+
     @Log(title = "competition", businessType = BusinessType.OTHER)
     @PostMapping("/reloadSortList")
     @ResponseBody
-    public AjaxResult reloadSortList(@Param("id") Long id,@Param("type") Long type) {
+    public AjaxResult reloadSortList(@Param("id") Long id, @Param("type") Long type) {
 
         List<CompetitionListVO> competitionListVOS = scCompetitionService.selectbatchCompetitionList(id, type);
         return AjaxResult.success(competitionListVOS);
@@ -261,7 +262,6 @@ public class ScCompetitionController extends BaseController {
      */
     @PostMapping("/judgeScore")
     @ResponseBody
-    @RepeatSubmit
     public AjaxResult judgeScore(@RequestBody ScCollageScore scCollageScore) {
 
         if (scCompetitionService.judgeScore(scCollageScore)) {
@@ -320,13 +320,19 @@ public class ScCompetitionController extends BaseController {
         toZip(fileList, fos2);
 
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        FileUtils.setAttachmentResponseHeader(response, "厦门理工学院首届辅导员素质能力大赛比赛名单");
+        FileUtils.setAttachmentResponseHeader(response, "厦门理工学院首届辅导员素质能力大赛比赛名单.zip");
         FileUtils.writeBytes(absoluteFile, response.getOutputStream());
         return AjaxResult.success(stringStringHashMap);
 
     }
+
+    @PostMapping("rankExport/{id}")
+    @ResponseBody
     public AjaxResult competitionRnakExport(HttpServletResponse response, @Param("id") Long id) throws IOException {
-//       scCompetitionService.getRankList(id,)
+        String s = scCompetitionService.competitionRankExport(id);
+        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        FileUtils.setAttachmentResponseHeader(response, "厦门理工学院首届辅导员素质能力大赛各项分数明细和排名.xlsx");
+        FileUtils.writeBytes(s, response.getOutputStream());
         return AjaxResult.success();
     }
 
