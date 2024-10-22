@@ -350,7 +350,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         scCollageScore1.setPlayerId(scCollageScore.getPlayerId());
         List<ScCollageScore> scCollageScores = scCollageScoreMapper.selectScCollageScoreList(scCollageScore1);
         if (!scCollageScores.isEmpty()) {
-            throw new ServiceException("您已评分");
+            return scCollageScoreMapper.updateScCollageScore(scCollageScore) > 0;
         }
         return scCollageScoreMapper.insertScCollageScore(scCollageScore) > 0;
     }
