@@ -2,6 +2,8 @@ package com.ruoyi.project.sc.college.service.impl;
 
 import java.util.List;
 
+import com.ruoyi.project.sc.CollageScore.domain.ScCollageScore;
+import com.ruoyi.project.sc.CollageScore.mapper.ScCollageScoreMapper;
 import com.ruoyi.project.sc.players.domain.ScPlayers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ public class ScCollegeServiceImpl implements IScCollegeService
 {
     @Autowired
     private ScCollegeMapper scCollegeMapper;
+    @Autowired
+    private ScCollageScoreMapper scCollageScoreMapper;
 
     /**
      * 查询college

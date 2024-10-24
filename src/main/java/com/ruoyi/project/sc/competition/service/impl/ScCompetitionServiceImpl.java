@@ -256,10 +256,16 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
             CompetitionListVO competitionListVO = new CompetitionListVO();
 
             ScPlayers scPlayersA = playerCollegeMap.get(competitionSort.getUser1());
-            competitionListVO.setUserA(new CompetitionUser(scPlayersA.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName(), scPlayersA.getType()));
+            if (scPlayersA != null) {
+
+                competitionListVO.setUserA(new CompetitionUser(scPlayersA.getCollegeId(), competitionSort.getId(), scPlayersA.getPlayerId(), scPlayersA.getName(), scPlayersA.getScColleges().getName(), scPlayersA.getType()));
+            }
 
             ScPlayers scPlayersB = playerCollegeMap.get(competitionSort.getUser2());
-            competitionListVO.setUserB(new CompetitionUser(scPlayersB.getCollegeId(), competitionSort.getId(), scPlayersB.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName(), scPlayersB.getType()));
+            if (scPlayersB != null) {
+
+                competitionListVO.setUserB(new CompetitionUser(scPlayersB.getCollegeId(), competitionSort.getId(), scPlayersB.getPlayerId(), scPlayersB.getName(), scPlayersB.getScColleges().getName(), scPlayersB.getType()));
+            }
 
             competitionListVO.setSort(competitionSort.getSort());
             competitionListVO.setSortId(competitionSort.getId());
@@ -361,15 +367,12 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         ScCollege scCollege = new ScCollege();
         scCollege.setCompetitionId(id);
         List<ScCollege> scColleges = scCollegeMapper.selectScCollegeList(scCollege);
-        List<ScCompetitionSort> scCompetitionSorts = scCompetitionSortMapper.selectScCompetitionSortList(null);
-        List<CaseScoreVO> selectCaseScore = scPlayersMapper.selectCaseScore();
         ArrayList<RankVo> rankVos = new ArrayList<>();
         switch (type) {
             //一等奖
             //二等奖
             //三等奖
             case 1:
-
                 List<RankVo> rankVosInner = getTotalRanking(scColleges);
                 for (int i = 0; i < rankVosInner.size(); i++) {
                     RankVo rankVo = rankVosInner.get(i);
