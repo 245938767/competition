@@ -22,7 +22,8 @@
     </resultMap>
 
     <resultMap id="CaseScoreResult" type="CaseScoreVO">
-        <result property="id" column="id"/>
+        <result property="userId" column="userid"/>
+        <result property="collegeId" column="collageid"/>
         <result property="score" column="score"/>
         <result property="counts" column="counts"/>
 
@@ -93,14 +94,14 @@
     </delete>
 
     <select id="selectBasicScore" resultMap="CaseScoreResult">
-        SELECT college_id as id, ROUND(AVG(basic_score),2) as score
+        SELECT college_id as collageid, ROUND(AVG(basic_score),2) as score
         FROM sc_players
         WHERE basic_score > 0
         GROUP BY college_id
     </select>
 
     <select id="selectCaseScore" resultMap="CaseScoreResult">
-        SELECT college_id as id, ROUND(AVG(avgScore),2) as score
+        SELECT college_id as collageid, ROUND(AVG(avgScore),2) as score
         FROM sc_collage_score scs
 
                  inner join (SELECT player_id                                                 as id,
@@ -110,9 +111,10 @@
         GROUP BY college_id;
     </select>
     <select id="selectUserCaseScore" resultMap="CaseScoreResult">
-        SELECT player_id                                                 as id,
-               ROUND ( (SUM(score) - MAX(score) - MIN(score)) / (count(player_id)-2),2) AS score
+        SELECT player_id                                                                 as userid,
+               college_id                                                                as collageid,
+               ROUND((SUM(score) - MAX(score) - MIN(score)) / (count(player_id) - 2), 2) AS score
         FROM sc_collage_score
-        GROUP BY player_id
+        GROUP BY player_id,college_id
     </select>
 </mapper>

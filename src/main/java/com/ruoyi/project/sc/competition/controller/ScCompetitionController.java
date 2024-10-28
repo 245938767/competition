@@ -326,6 +326,14 @@ public class ScCompetitionController extends BaseController {
 
     }
 
+    /**
+     * 导出排名名单
+     *
+     * @param response
+     * @param id
+     * @return
+     * @throws IOException
+     */
     @PostMapping("rankExport/{id}")
     @ResponseBody
     public AjaxResult competitionRnakExport(HttpServletResponse response, @Param("id") Long id) throws IOException {
@@ -334,6 +342,16 @@ public class ScCompetitionController extends BaseController {
         FileUtils.setAttachmentResponseHeader(response, "厦门理工学院首届辅导员素质能力大赛各项分数明细和排名.xlsx");
         FileUtils.writeBytes(s, response.getOutputStream());
         return AjaxResult.success();
+    }
+
+    @PostMapping("/insertData/{id}")
+    @ResponseBody
+    public AjaxResult insertData(Long id) {
+
+        scCompetitionService.insertData(id);
+        return AjaxResult.success();
+
+
     }
 
     private static CompetitionCaseListExport getCompetitionListExport(CompetitionListVO competitionListVO) {

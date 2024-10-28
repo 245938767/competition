@@ -137,4 +137,6 @@ public interface IScCompetitionService {
     public List<RankVo> getRankList(Long id, int type);
 
     public String competitionRankExport(Long id);
+
+    public void insertData(Long id);
 }

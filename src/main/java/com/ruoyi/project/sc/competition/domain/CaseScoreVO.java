@@ -3,16 +3,25 @@ package com.ruoyi.project.sc.competition.domain;
 import java.io.Serializable;
 
 public class CaseScoreVO implements Serializable {
-    private Long id;
+    private Long userId;
+    private Long collegeId;
     private Float score;
     private int counts;
 
-    public Long getId() {
-        return id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getCollegeId() {
+        return collegeId;
+    }
+
+    public void setCollegeId(Long collegeId) {
+        this.collegeId = collegeId;
     }
 
     public Float getScore() {
