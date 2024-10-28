@@ -306,21 +306,21 @@ public class ScCompetitionController extends BaseController {
         }
         ExcelUtil<CompetitionTalkListExport> talk = new ExcelUtil<CompetitionTalkListExport>(CompetitionTalkListExport.class);
 
-        AjaxResult ajaxResult1 = talk.exportExcel(competitionTalkListExports, "谈心谈话名单", "厦门理工学院首届辅导员素质能力大赛比赛名单");
+        AjaxResult ajaxResult1 = talk.exportExcel(competitionTalkListExports, "谈心谈话名单", "厦门理工学院第一届辅导员素质能力大赛比赛名单");
         ExcelUtil<CompetitionCaseListExport> util = new ExcelUtil<CompetitionCaseListExport>(CompetitionCaseListExport.class);
         HashMap<String, String> stringStringHashMap = new HashMap<>();
-        AjaxResult ajaxResult = util.exportExcel(competitionCaseListExports, "案例分析名单", "厦门理工学院首届辅导员素质能力大赛比赛名单");
+        AjaxResult ajaxResult = util.exportExcel(competitionCaseListExports, "案例分析名单", "厦门理工学院第一届辅导员素质能力大赛比赛名单");
         String casePath = ExcelUtil.getAbsoluteFile(ajaxResult.get("msg").toString());
         String talkPath = ExcelUtil.getAbsoluteFile(ajaxResult1.get("msg").toString());
         List<File> fileList = new ArrayList<>();
         fileList.add(new File(casePath));
         fileList.add(new File(talkPath));
-        String absoluteFile = ExcelUtil.getAbsoluteFile(UUID.fastUUID() + "厦门理工学院首届辅导员素质能力大赛比赛名单.zip");
+        String absoluteFile = ExcelUtil.getAbsoluteFile(UUID.fastUUID() + "厦门理工学院第一届辅导员素质能力大赛比赛名单.zip");
         FileOutputStream fos2 = new FileOutputStream(new File(absoluteFile));
         toZip(fileList, fos2);
 
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        FileUtils.setAttachmentResponseHeader(response, "厦门理工学院首届辅导员素质能力大赛比赛名单.zip");
+        FileUtils.setAttachmentResponseHeader(response, "厦门理工学院第一届辅导员素质能力大赛比赛名单.zip");
         FileUtils.writeBytes(absoluteFile, response.getOutputStream());
         return AjaxResult.success(stringStringHashMap);
 
@@ -339,7 +339,7 @@ public class ScCompetitionController extends BaseController {
     public AjaxResult competitionRnakExport(HttpServletResponse response, @Param("id") Long id) throws IOException {
         String s = scCompetitionService.competitionRankExport(id);
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        FileUtils.setAttachmentResponseHeader(response, "厦门理工学院首届辅导员素质能力大赛各项分数明细和排名.xlsx");
+        FileUtils.setAttachmentResponseHeader(response, "厦门理工学院第一届辅导员素质能力大赛各项分数明细和排名.xlsx");
         FileUtils.writeBytes(s, response.getOutputStream());
         return AjaxResult.success();
     }

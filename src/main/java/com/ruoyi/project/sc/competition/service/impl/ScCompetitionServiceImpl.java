@@ -594,7 +594,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
         }
 
         ExcelUtil<CompetitionScoreListExport> util = new ExcelUtil<CompetitionScoreListExport>(CompetitionScoreListExport.class);
-        AjaxResult ajaxResult = util.exportExcel(competitionScoreListExports, "分数明细和排名", "厦门理工学院首届辅导员素质能力大赛各项分数明细和排名");
+        AjaxResult ajaxResult = util.exportExcel(competitionScoreListExports, "分数明细和排名", "厦门理工学院第一届辅导员素质能力大赛各项分数明细和排名");
         String casePath = ExcelUtil.getAbsoluteFile(ajaxResult.get("msg").toString());
         return casePath;
     }
