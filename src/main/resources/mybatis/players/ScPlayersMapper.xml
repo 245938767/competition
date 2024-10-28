@@ -96,7 +96,7 @@
     <select id="selectBasicScore" resultMap="CaseScoreResult">
         SELECT college_id as collageid, ROUND(AVG(basic_score),2) as score
         FROM sc_players
-        WHERE basic_score > 0
+        WHERE basic_score > 0 and type <![CDATA[ <= ]]> 3
         GROUP BY college_id
     </select>
 
