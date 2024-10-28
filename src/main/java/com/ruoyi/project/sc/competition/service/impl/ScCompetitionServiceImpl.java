@@ -10,7 +10,6 @@ import com.ruoyi.project.sc.CollageScore.mapper.ScCollageScoreMapper;
 import com.ruoyi.project.sc.college.domain.ScCollege;
 import com.ruoyi.project.sc.college.mapper.ScCollegeMapper;
 import com.ruoyi.project.sc.competition.domain.*;
-import com.ruoyi.project.sc.competition.domain.export.CompetitionCaseListExport;
 import com.ruoyi.project.sc.competition.domain.export.CompetitionScoreListExport;
 import com.ruoyi.project.sc.competition.domain.export.CompetitionUserScoreExport;
 import com.ruoyi.project.sc.players.domain.ScPlayers;
@@ -22,6 +21,8 @@ import com.ruoyi.project.socket.NoticeWebsocketResp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.ruoyi.common.utils.StringUtils;
@@ -565,14 +566,16 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                 competitionUserScoreExport.setBasicScore(Float.valueOf(players.getBasicScore()));
                 competitionUserScoreExport.setName(players.getName());
 
-//                competitionUserScoreExport.setTalkScore(0F);
-//                competitionUserScoreExport.setTalkRank(0L);
-//                competitionUserScoreExport.setCaseScore(0F);
-//                competitionUserScoreExport.setCaseRank(0L);
-                //case
+                //case 有案例研讨就不会有谈心谈话的分数，反之同理
                 RankVo casescore = caseUserMap.get(players.getPlayerId());
                 if (casescore != null) {
+                    if (players.getType() == 1) {
 
+                        competitionUserScoreExport.setItem("案例研讨A");
+                    } else {
+
+                        competitionUserScoreExport.setItem("案例研讨B");
+                    }
                     competitionUserScoreExport.setCaseScore(casescore.getScore());
                     competitionUserScoreExport.setCaseRank((long) casescore.getSort());
                     competitionUserScoreExports.add(competitionUserScoreExport);
@@ -581,18 +584,21 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                 // talk
                 RankVo talkcase = talkUserMap.get(players.getPlayerId());
                 if (talkcase != null) {
-
+                    competitionUserScoreExport.setItem("谈心谈话");
                     competitionUserScoreExport.setTalkScore(talkcase.getScore());
                     competitionUserScoreExport.setTalkRank((long) talkcase.getSort());
+                    competitionUserScoreExports.add(competitionUserScoreExport);
                     continue;
                 }
 
 
             }
+            competitionUserScoreExports = competitionUserScoreExports.stream().sorted(Comparator.comparing(CompetitionUserScoreExport::getItem)).collect(Collectors.toList());
             competitionScoreListExport.setUserScore(competitionUserScoreExports);
             competitionScoreListExports.add(competitionScoreListExport);
         }
-
+        AtomicLong count = new AtomicLong(1);
+        competitionScoreListExports.forEach(x -> x.setSort(count.getAndIncrement()));
         ExcelUtil<CompetitionScoreListExport> util = new ExcelUtil<CompetitionScoreListExport>(CompetitionScoreListExport.class);
         AjaxResult ajaxResult = util.exportExcel(competitionScoreListExports, "分数明细和排名", "厦门理工学院第一届辅导员素质能力大赛各项分数明细和排名");
         String casePath = ExcelUtil.getAbsoluteFile(ajaxResult.get("msg").toString());

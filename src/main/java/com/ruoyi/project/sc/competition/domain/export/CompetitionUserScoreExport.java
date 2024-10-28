@@ -1,23 +1,26 @@
 package com.ruoyi.project.sc.competition.domain.export;
 
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.ruoyi.framework.aspectj.lang.annotation.Excel;
+import org.apache.poi.ss.usermodel.IndexedColors;
 
+@ExcelIgnoreUnannotated
 public class CompetitionUserScoreExport {
-    @Excel(name = "参赛项目")
+    @Excel(name = "参赛项目", headerColor = IndexedColors.BLACK, headerBackgroundColor = IndexedColors.WHITE)
     private String item;
-    @Excel(name = "姓名")
+    @Excel(name = "姓名", headerColor = IndexedColors.BLACK, headerBackgroundColor = IndexedColors.WHITE)
     private String name;
 
-    @Excel(name = "笔试分数")
+    @Excel(name = "笔试分数", headerColor = IndexedColors.BLACK, headerBackgroundColor = IndexedColors.WHITE)
     private Float basicScore;
 
-    @Excel(name = "研讨案例分数")
+    @Excel(name = "研讨案例分数", headerColor = IndexedColors.BLACK, headerBackgroundColor = IndexedColors.WHITE)
     private Float caseScore;
-    @Excel(name = "案例研讨排名")
+    @Excel(name = "案例研讨排名", headerColor = IndexedColors.BLACK, headerBackgroundColor = IndexedColors.WHITE)
     private Long caseRank;
-    @Excel(name = "谈心谈话分数")
+    @Excel(name = "谈心谈话分数", headerColor = IndexedColors.BLACK, headerBackgroundColor = IndexedColors.WHITE)
     private Float talkScore;
-    @Excel(name = "谈心谈话排名")
+    @Excel(name = "谈心谈话排名", headerColor = IndexedColors.BLACK, headerBackgroundColor = IndexedColors.WHITE)
     private Long talkRank;
 
     public String getItem() {
