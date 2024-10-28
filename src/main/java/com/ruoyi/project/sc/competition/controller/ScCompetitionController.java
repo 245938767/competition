@@ -344,9 +344,9 @@ public class ScCompetitionController extends BaseController {
         return AjaxResult.success();
     }
 
-    @PostMapping("/insertData/{id}")
+    @GetMapping("/insertData/{id}")
     @ResponseBody
-    public AjaxResult insertData(Long id) {
+    public AjaxResult insertData(@PathVariable Long id) {
 
         scCompetitionService.insertData(id);
         return AjaxResult.success();
