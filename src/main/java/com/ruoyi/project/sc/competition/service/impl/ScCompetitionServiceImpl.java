@@ -429,6 +429,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                         rankVo.setSort(acount + 1);
                         rankVo.setScore(caseScoreVO.getScore());
                         rankVos.add(rankVo);
+                        rankVo.setType(1);
                         acount++;
 
                     } else if (collectB.contains(caseScoreVO.getUserId())) {
@@ -440,6 +441,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                         rankVo.setName(scColleges.stream().filter(z -> z.getCollegeId().equals(scPlayersUser.getCollegeId())).findFirst().get().getName());
                         rankVo.setSort(bcount + 1);
                         rankVo.setScore(caseScoreVO.getScore());
+                        rankVo.setType(2);
                         rankVos.add(rankVo);
                         bcount++;
 

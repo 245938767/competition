@@ -8,6 +8,15 @@ public class RankVo implements Serializable {
     private String user;
     private Float score;
     private int sort;
+    private int type;
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public Long getCollegeId() {
         return collegeId;
