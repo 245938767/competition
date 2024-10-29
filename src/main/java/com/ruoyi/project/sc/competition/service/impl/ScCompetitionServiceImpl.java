@@ -729,7 +729,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
 
     private static String extractCollegeName(String fullName) {
         // 假设学院名称格式为"学院X A队"或"学院X B队"
-        return fullName.replaceAll("\\s[12]队$", "");
+        return fullName.replaceAll("\\s[一二]队$", "");
     }
 
 }
