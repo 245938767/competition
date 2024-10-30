@@ -309,6 +309,47 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                 scCollageScoreB.setPlayerId(competitionUserB.getPlayerId());
                 List<ScCollageScore> scCollageScoresB = scCollageScoreMapper.selectScCollageScoreList(scCollageScoreB);
 
+                // 计算平均分
+                if (!scCollageScoresA.isEmpty() && scCollageScoresA.size() >= 3) {
+                    List<Long> scores = scCollageScoresA.stream()
+                        .map(ScCollageScore::getScore)
+                        .sorted()
+                        .collect(Collectors.toList());
+                    
+                    // 去掉最高分和最低分
+                    scores.remove(0);
+                    scores.remove(scores.size() - 1);
+                    
+                    // 计算剩余分数的平均值并保留2位小数
+                    float avgA = (float) Math.round(scores.stream()
+                        .mapToDouble(score -> score)
+                        .average()
+                        .orElse(0.0) * 100) / 100f;
+                    competitionUserA.setAverageScore(avgA);
+                } else {
+                    competitionUserA.setAverageScore(0.00f);
+                }
+                
+                if (!scCollageScoresB.isEmpty() && scCollageScoresB.size() >= 3) {
+                    List<Long> scores = scCollageScoresB.stream()
+                        .map(ScCollageScore::getScore)
+                        .sorted()
+                        .collect(Collectors.toList());
+                    
+                    // 去掉最高分和最低分
+                    scores.remove(0);
+                    scores.remove(scores.size() - 1);
+                    
+                    // 计算剩余分数的平均值并保留2位小数
+                    float avgB = (float) Math.round(scores.stream()
+                        .mapToDouble(score -> score)
+                        .average()
+                        .orElse(0.0) * 100) / 100f;
+                    competitionUserB.setAverageScore(avgB);
+                } else {
+                    competitionUserB.setAverageScore(0.00f);
+                }
+
                 competitionUserA.setScCollageScores(scCollageScoresA);
                 competitionUserB.setScCollageScores(scCollageScoresB);
                 competitionCurrentData.setUserA(competitionUserA);

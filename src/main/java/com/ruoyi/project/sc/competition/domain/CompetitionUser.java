@@ -40,6 +40,7 @@ public class CompetitionUser implements Serializable {
     private String name;
     private String collage;
     private Long type;
+    private Float averageScore;
 
     public Long getType() {
         return type;
@@ -95,5 +96,13 @@ public class CompetitionUser implements Serializable {
 
     public void setCollage(String collage) {
         this.collage = collage;
+    }
+
+    public Float getAverageScore() {
+        return averageScore;
+    }
+
+    public void setAverageScore(Float averageScore) {
+        this.averageScore = averageScore;
     }
 }
