@@ -33,7 +33,7 @@ public class ScPlayers extends BaseEntity
 
     /** 基础能力成绩 */
     @Excel(name = "基础能力成绩")
-    private Long basicScore;
+    private Float basicScore;
 
     private ScCollege scColleges;
 
@@ -85,12 +85,12 @@ public class ScPlayers extends BaseEntity
         return type;
     }
 
-    public void setBasicScore(Long basicScore) 
+    public void setBasicScore(Float basicScore)
     {
         this.basicScore = basicScore;
     }
 
-    public Long getBasicScore() 
+    public Float getBasicScore()
     {
         return basicScore;
     }

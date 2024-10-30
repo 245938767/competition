@@ -441,7 +441,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                     RankVo rankVo = new RankVo();
                     rankVo.setCollegeId(x.getCollegeId());
                     rankVo.setName(scColleges.stream().filter(z -> z.getCollegeId().equals(x.getCollegeId())).findFirst().get().getName());
-                    rankVo.setScore(Float.valueOf(x.getBasicScore()));
+                    rankVo.setScore(x.getBasicScore());
                     rankVo.setSort(i + 1);
                     rankVo.setUser(x.getName());
                     rankVos.add(rankVo);
@@ -606,7 +606,7 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
             List<ScPlayers> collect = scPlayers.stream().filter(x -> Objects.equals(x.getCollegeId(), rankVo.getCollegeId())).sorted(Comparator.comparing(ScPlayers::getType).reversed()).collect(Collectors.toList());
             for (ScPlayers players : collect) {
                 CompetitionUserScoreExport competitionUserScoreExport = new CompetitionUserScoreExport();
-                competitionUserScoreExport.setBasicScore(Float.valueOf(players.getBasicScore()));
+                competitionUserScoreExport.setBasicScore(players.getBasicScore());
                 competitionUserScoreExport.setName(players.getName());
 
                 //case 有案例研讨就不会有谈心谈话的分数，反之同理
