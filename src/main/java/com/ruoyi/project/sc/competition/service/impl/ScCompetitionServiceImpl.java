@@ -312,39 +312,39 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
                 // 计算平均分
                 if (!scCollageScoresA.isEmpty() && scCollageScoresA.size() >= 3) {
                     List<Long> scores = scCollageScoresA.stream()
-                        .map(ScCollageScore::getScore)
-                        .sorted()
-                        .collect(Collectors.toList());
-                    
+                            .map(ScCollageScore::getScore)
+                            .sorted()
+                            .collect(Collectors.toList());
+
                     // 去掉最高分和最低分
                     scores.remove(0);
                     scores.remove(scores.size() - 1);
-                    
+
                     // 计算剩余分数的平均值并保留2位小数
                     float avgA = (float) Math.round(scores.stream()
-                        .mapToDouble(score -> score)
-                        .average()
-                        .orElse(0.0) * 100) / 100f;
+                            .mapToDouble(score -> score)
+                            .average()
+                            .orElse(0.0) * 100) / 100f;
                     competitionUserA.setAverageScore(avgA);
                 } else {
                     competitionUserA.setAverageScore(0.00f);
                 }
-                
+
                 if (!scCollageScoresB.isEmpty() && scCollageScoresB.size() >= 3) {
                     List<Long> scores = scCollageScoresB.stream()
-                        .map(ScCollageScore::getScore)
-                        .sorted()
-                        .collect(Collectors.toList());
-                    
+                            .map(ScCollageScore::getScore)
+                            .sorted()
+                            .collect(Collectors.toList());
+
                     // 去掉最高分和最低分
                     scores.remove(0);
                     scores.remove(scores.size() - 1);
-                    
+
                     // 计算剩余分数的平均值并保留2位小数
                     float avgB = (float) Math.round(scores.stream()
-                        .mapToDouble(score -> score)
-                        .average()
-                        .orElse(0.0) * 100) / 100f;
+                            .mapToDouble(score -> score)
+                            .average()
+                            .orElse(0.0) * 100) / 100f;
                     competitionUserB.setAverageScore(avgB);
                 } else {
                     competitionUserB.setAverageScore(0.00f);
@@ -388,19 +388,21 @@ public class ScCompetitionServiceImpl implements IScCompetitionService {
 
     @Override
     public boolean judgeScore(ScCollageScore scCollageScore) {
-        if (scCollageScore.getScoreId() != null || scCollageScore.getScore() == null || scCollageScore.getJudgeId() == null || scCollageScore.getPlayerId() == null) {
-            throw new ServiceException("请确保传入参数的完整性");
+        synchronized (this) {
+            if (scCollageScore.getScoreId() != null || scCollageScore.getScore() == null || scCollageScore.getJudgeId() == null || scCollageScore.getPlayerId() == null) {
+                throw new ServiceException("请确保传入参数的完整性");
+            }
+            ScCollageScore scCollageScore1 = new ScCollageScore();
+            scCollageScore1.setScoreId(scCollageScore.getScoreId());
+            scCollageScore1.setJudgeId(scCollageScore.getJudgeId());
+            scCollageScore1.setCollegeId(scCollageScore.getCollegeId());
+            scCollageScore1.setPlayerId(scCollageScore.getPlayerId());
+            List<ScCollageScore> scCollageScores = scCollageScoreMapper.selectScCollageScoreList(scCollageScore1);
+            if (!scCollageScores.isEmpty()) {
+                return scCollageScoreMapper.updateScCollageScore(scCollageScore) > 0;
+            }
+            return scCollageScoreMapper.insertScCollageScore(scCollageScore) > 0;
         }
-        ScCollageScore scCollageScore1 = new ScCollageScore();
-        scCollageScore1.setScoreId(scCollageScore.getScoreId());
-        scCollageScore1.setJudgeId(scCollageScore.getJudgeId());
-        scCollageScore1.setCollegeId(scCollageScore.getCollegeId());
-        scCollageScore1.setPlayerId(scCollageScore.getPlayerId());
-        List<ScCollageScore> scCollageScores = scCollageScoreMapper.selectScCollageScoreList(scCollageScore1);
-        if (!scCollageScores.isEmpty()) {
-            return scCollageScoreMapper.updateScCollageScore(scCollageScore) > 0;
-        }
-        return scCollageScoreMapper.insertScCollageScore(scCollageScore) > 0;
     }
 
     @Override
