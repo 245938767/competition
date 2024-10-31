@@ -42,6 +42,7 @@ public class CompetitionWebSocket {
 
     @OnOpen
     public void onOpen(Session session) {
+        session.setMaxIdleTimeout(30000); // 30秒
         String sessionId = session.getId();
         System.out.printf("新连接：%s%n", sessionId);
         clients.put(sessionId, session);

@@ -268,7 +268,7 @@ public class ScCompetitionController extends BaseController {
             competitionWebSocket.sendMessage();
             return AjaxResult.success();
         }
-        return AjaxResult.error();
+        return AjaxResult.error("请不要重复提交");
     }
 
     @PostMapping("/TournamentRanking")
